@@ -1,0 +1,163 @@
+[
+  {
+    "day_number": 1,
+    "title": "Daily Standup",
+    "description": "Vocabulary and phrases for daily standup meetings and status updates.",
+    "content": {
+      "spelling": [
+        { "word": "milestone", "definition": "A significant point or event in a project timeline.", "phonetic": "/ˈmaɪl.stoʊn/", "syllables": "mile·stone" },
+        { "word": "prioritize", "definition": "To arrange tasks in order of importance.", "phonetic": "/praɪˈɒr.ɪ.taɪz/", "syllables": "pri·or·i·tize" },
+        { "word": "blocker", "definition": "An obstacle preventing progress on a task.", "phonetic": "/ˈblɒk.ər/", "syllables": "block·er" },
+        { "word": "dependency", "definition": "A task or component that another task relies on.", "phonetic": "/dɪˈpen.dən.si/", "syllables": "de·pen·den·cy" },
+        { "word": "deliverable", "definition": "A tangible output or result produced in a project.", "phonetic": "/dɪˈlɪv.ər.ə.bəl/", "syllables": "de·liv·er·a·ble" }
+      ],
+      "dictation": [
+        { "text": "I completed the user authentication module yesterday.", "hint": "Status update" },
+        { "text": "There is a blocker on the payment integration that needs attention.", "hint": "Raising issues" },
+        { "text": "I am going to work on the database migration today.", "hint": "Planning ahead" }
+      ],
+      "speaking": [
+        { "text": "My main priority today is finishing the API documentation." },
+        { "text": "I need some help resolving a dependency conflict in the build." }
+      ]
+    }
+  },
+  {
+    "day_number": 2,
+    "title": "Email Communication",
+    "description": "Professional email writing, tone, and common phrases for the workplace.",
+    "content": {
+      "spelling": [
+        { "word": "regarding", "definition": "Concerning or about a particular subject.", "phonetic": "/rɪˈɡɑːr.dɪŋ/", "syllables": "re·gard·ing" },
+        { "word": "attachment", "definition": "A file sent along with an email message.", "phonetic": "/əˈtætʃ.mənt/", "syllables": "at·tach·ment" },
+        { "word": "acknowledge", "definition": "To confirm receipt or recognition of something.", "phonetic": "/əkˈnɒl.ɪdʒ/", "syllables": "ac·knowl·edge" },
+        { "word": "inconvenience", "definition": "A state of trouble or difficulty caused to someone.", "phonetic": "/ˌɪn.kənˈviː.ni.əns/", "syllables": "in·con·ven·ience" },
+        { "word": "correspondence", "definition": "Written communication exchanged between people.", "phonetic": "/ˌkɒr.ɪˈspɒn.dəns/", "syllables": "cor·re·spon·dence" }
+      ],
+      "dictation": [
+        { "text": "Please find the updated project timeline attached to this email.", "hint": "Sending files" },
+        { "text": "I wanted to follow up on our conversation from last week.", "hint": "Following up" },
+        { "text": "Could you please confirm the meeting time at your earliest convenience?", "hint": "Requesting confirmation" }
+      ],
+      "speaking": [
+        { "text": "Thank you for your prompt response regarding the contract changes." },
+        { "text": "I apologize for any inconvenience this delay may have caused." }
+      ]
+    }
+  },
+  {
+    "day_number": 3,
+    "title": "Team Meeting",
+    "description": "Phrases for participating effectively in team discussions and brainstorming sessions.",
+    "content": {
+      "spelling": [
+        { "word": "agenda", "definition": "A list of items to be discussed at a meeting.", "phonetic": "/əˈdʒen.də/", "syllables": "a·gen·da" },
+        { "word": "consensus", "definition": "A general agreement reached by a group.", "phonetic": "/kənˈsen.səs/", "syllables": "con·sen·sus" },
+        { "word": "facilitate", "definition": "To make a process or action easier.", "phonetic": "/fəˈsɪl.ɪ.teɪt/", "syllables": "fa·cil·i·tate" },
+        { "word": "collaborate", "definition": "To work jointly with others on a project.", "phonetic": "/kəˈlæb.ə.reɪt/", "syllables": "col·lab·o·rate" },
+        { "word": "stakeholder", "definition": "A person with an interest in a project's outcome.", "phonetic": "/ˈsteɪk.hoʊl.dər/", "syllables": "stake·hold·er" }
+      ],
+      "dictation": [
+        { "text": "Let us go around the table and share our progress updates.", "hint": "Opening a meeting" },
+        { "text": "I think we should consider an alternative approach to this problem.", "hint": "Offering suggestions" },
+        { "text": "Does anyone have questions before we move on to the next topic?", "hint": "Transitioning" }
+      ],
+      "speaking": [
+        { "text": "I would like to add a point to what Sarah just mentioned about the timeline." },
+        { "text": "Can we schedule a follow-up meeting to discuss this in more detail?" }
+      ]
+    }
+  },
+  {
+    "day_number": 4,
+    "title": "Code Review Feedback",
+    "description": "Technical vocabulary and constructive phrases for giving and receiving code reviews.",
+    "content": {
+      "spelling": [
+        { "word": "refactor", "definition": "To restructure existing code without changing its behavior.", "phonetic": "/riːˈfæk.tər/", "syllables": "re·fac·tor" },
+        { "word": "deprecated", "definition": "A feature that is no longer recommended for use.", "phonetic": "/ˈdep.rə.keɪ.tɪd/", "syllables": "dep·re·cat·ed" },
+        { "word": "vulnerability", "definition": "A weakness that can be exploited in a system.", "phonetic": "/ˌvʌl.nər.əˈbɪl.ɪ.ti/", "syllables": "vul·ner·a·bil·i·ty" },
+        { "word": "implementation", "definition": "The process of putting a plan or design into effect.", "phonetic": "/ˌɪm.plɪ.menˈteɪ.ʃən/", "syllables": "im·ple·men·ta·tion" },
+        { "word": "optimization", "definition": "The process of making something as effective as possible.", "phonetic": "/ˌɒp.tɪ.maɪˈzeɪ.ʃən/", "syllables": "op·ti·mi·za·tion" }
+      ],
+      "dictation": [
+        { "text": "This function could be simplified by extracting the validation logic.", "hint": "Suggesting improvements" },
+        { "text": "I noticed a potential memory leak in the event listener setup.", "hint": "Identifying bugs" },
+        { "text": "Great work on the error handling, it covers all the edge cases.", "hint": "Positive feedback" }
+      ],
+      "speaking": [
+        { "text": "Could you explain the reasoning behind this design decision?" },
+        { "text": "I suggest we add unit tests before merging this pull request." }
+      ]
+    }
+  },
+  {
+    "day_number": 5,
+    "title": "Client Communication",
+    "description": "Professional language for client calls, presentations, and relationship management.",
+    "content": {
+      "spelling": [
+        { "word": "requirement", "definition": "A condition or capability needed by a user or system.", "phonetic": "/rɪˈkwaɪər.mənt/", "syllables": "re·quire·ment" },
+        { "word": "feasibility", "definition": "The practicality or possibility of a proposed plan.", "phonetic": "/ˌfiː.zəˈbɪl.ɪ.ti/", "syllables": "fea·si·bil·i·ty" },
+        { "word": "deliverable", "definition": "A tangible result that must be produced to complete a project.", "phonetic": "/dɪˈlɪv.ər.ə.bəl/", "syllables": "de·liv·er·a·ble" },
+        { "word": "expectation", "definition": "A strong belief that something will happen or be the case.", "phonetic": "/ˌek.spekˈteɪ.ʃən/", "syllables": "ex·pec·ta·tion" },
+        { "word": "transparency", "definition": "Openness and clarity in communication and processes.", "phonetic": "/trænsˈpær.ən.si/", "syllables": "trans·par·en·cy" }
+      ],
+      "dictation": [
+        { "text": "We are on track to deliver the first prototype by the end of this month.", "hint": "Progress update" },
+        { "text": "I would like to walk you through the proposed solution for this feature.", "hint": "Presenting ideas" },
+        { "text": "Based on your feedback, we have adjusted the project scope accordingly.", "hint": "Responding to feedback" }
+      ],
+      "speaking": [
+        { "text": "We appreciate your patience as we work through these technical challenges." },
+        { "text": "Could you clarify your expectations for the user interface design?" }
+      ]
+    }
+  },
+  {
+    "day_number": 6,
+    "title": "Sprint Planning",
+    "description": "Vocabulary for agile ceremonies, estimation, and sprint organization.",
+    "content": {
+      "spelling": [
+        { "word": "estimation", "definition": "A rough calculation of the value, number, or extent of something.", "phonetic": "/ˌes.tɪˈmeɪ.ʃən/", "syllables": "es·ti·ma·tion" },
+        { "word": "retrospective", "definition": "A meeting to reflect on what went well and what to improve.", "phonetic": "/ˌret.rəˈspek.tɪv/", "syllables": "ret·ro·spec·tive" },
+        { "word": "throughput", "definition": "The amount of work completed in a given time period.", "phonetic": "/ˈθruː.pʊt/", "syllables": "through·put" },
+        { "word": "iteration", "definition": "A repeated cycle of development in agile methodology.", "phonetic": "/ˌɪt.əˈreɪ.ʃən/", "syllables": "it·er·a·tion" },
+        { "word": "bottleneck", "definition": "A point of congestion that slows down a process.", "phonetic": "/ˈbɒt.əl.nek/", "syllables": "bot·tle·neck" }
+      ],
+      "dictation": [
+        { "text": "Let us estimate the story points for each task in the backlog.", "hint": "Sprint planning" },
+        { "text": "We need to identify any potential bottlenecks before the sprint begins.", "hint": "Risk assessment" },
+        { "text": "The velocity from last sprint suggests we can complete twelve points.", "hint": "Capacity planning" }
+      ],
+      "speaking": [
+        { "text": "I believe this user story needs to be broken down into smaller tasks." },
+        { "text": "Our retrospective showed that communication was our biggest area for improvement." }
+      ]
+    }
+  },
+  {
+    "day_number": 7,
+    "title": "Incident Response",
+    "description": "Critical communication phrases for handling production issues and outages.",
+    "content": {
+      "spelling": [
+        { "word": "escalation", "definition": "The process of raising an issue to a higher level of authority.", "phonetic": "/ˌes.kəˈleɪ.ʃən/", "syllables": "es·ca·la·tion" },
+        { "word": "diagnosis", "definition": "The identification of the nature and cause of a problem.", "phonetic": "/ˌdaɪ.əɡˈnoʊ.sɪs/", "syllables": "di·ag·no·sis" },
+        { "word": "mitigation", "definition": "Actions taken to reduce the severity of a problem.", "phonetic": "/ˌmɪt.ɪˈɡeɪ.ʃən/", "syllables": "mit·i·ga·tion" },
+        { "word": "postmortem", "definition": "An analysis conducted after an incident to prevent recurrence.", "phonetic": "/ˌpoʊstˈmɔːr.təm/", "syllables": "post·mor·tem" },
+        { "word": "redundancy", "definition": "Backup systems or processes that prevent single points of failure.", "phonetic": "/rɪˈdʌn.dən.si/", "syllables": "re·dun·dan·cy" }
+      ],
+      "dictation": [
+        { "text": "We have identified the root cause and a fix is being deployed now.", "hint": "Status communication" },
+        { "text": "The monitoring dashboard shows that error rates have returned to normal.", "hint": "Recovery confirmation" },
+        { "text": "Please document all the steps taken during the incident for the postmortem.", "hint": "Documentation" }
+      ],
+      "speaking": [
+        { "text": "I am escalating this issue to the infrastructure team for immediate attention." },
+        { "text": "We should implement additional monitoring to catch this type of failure earlier." }
+      ]
+    }
+  }
+]

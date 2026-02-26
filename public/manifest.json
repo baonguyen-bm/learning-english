@@ -1,0 +1,17 @@
+{
+  "name": "English Daily Practice",
+  "short_name": "EnglishPWA",
+  "description": "Daily English learning missions — Hear it, Write it, Say it.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBF5",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
