@@ -1,14 +1,22 @@
 import { supabase } from "./supabaseClient";
+import type {
+  SpellingItem,
+  DictationItem,
+  SpeakingItem,
+  ListeningItem,
+} from "@/types/exercises";
 
 export interface Mission {
   id: string;
   day_number: number;
   title: string;
   description: string;
+  difficulty: number;
   content: {
-    spelling: { word: string; definition: string }[];
-    dictation: { text: string; hint: string }[];
-    speaking: { text: string }[];
+    spelling: SpellingItem[];
+    dictation: DictationItem[];
+    speaking: SpeakingItem[];
+    listening?: ListeningItem[];
   };
 }
 

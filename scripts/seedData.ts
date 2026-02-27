@@ -13,14 +13,21 @@ async function seed() {
   console.log(`Seeding ${missions.length} missions...`);
 
   for (const mission of missions) {
+    const missionWithDifficulty = {
+      ...mission,
+      difficulty: (mission as Record<string, unknown>).difficulty ?? 2,
+    };
+
     const { error } = await supabase
       .from("missions")
-      .upsert(mission, { onConflict: "day_number" });
+      .upsert(missionWithDifficulty, { onConflict: "day_number,difficulty" });
 
     if (error) {
       console.error(`Error seeding Day ${mission.day_number}:`, error.message);
     } else {
-      console.log(`  ✓ Day ${mission.day_number}: ${mission.title}`);
+      console.log(
+        `  ✓ Day ${mission.day_number} (difficulty ${missionWithDifficulty.difficulty}): ${mission.title}`
+      );
     }
   }
 

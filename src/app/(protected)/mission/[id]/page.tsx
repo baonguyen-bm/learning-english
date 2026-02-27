@@ -9,6 +9,7 @@ import {
   completeMission,
   type Mission,
 } from "@/lib/progress";
+import type { Exercise } from "@/types/exercises";
 import { SpellingBee } from "@/components/modules/SpellingBee";
 import { Dictation } from "@/components/modules/Dictation";
 import { Speaking } from "@/components/modules/Speaking";
@@ -16,11 +17,6 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ArrowLeft, ArrowRight, Trophy } from "lucide-react";
-
-interface Exercise {
-  type: "spelling" | "dictation" | "speaking";
-  data: Record<string, string>;
-}
 
 export default function MissionPage() {
   const router = useRouter();
@@ -45,15 +41,22 @@ export default function MissionPage() {
       }
       setMission(data);
       setExercises([
-        ...data.content.spelling.map(
-          (s) => ({ type: "spelling" as const, data: s }) as Exercise
-        ),
-        ...data.content.dictation.map(
-          (d) => ({ type: "dictation" as const, data: d }) as Exercise
-        ),
-        ...data.content.speaking.map(
-          (s) => ({ type: "speaking" as const, data: s }) as Exercise
-        ),
+        ...data.content.spelling.map((s) => ({
+          type: "spelling" as const,
+          data: s,
+        })),
+        ...data.content.dictation.map((d) => ({
+          type: "dictation" as const,
+          data: d,
+        })),
+        ...(data.content.listening || []).map((l) => ({
+          type: "listening" as const,
+          data: l,
+        })),
+        ...data.content.speaking.map((s) => ({
+          type: "speaking" as const,
+          data: s,
+        })),
       ]);
       setLoading(false);
     }
@@ -108,6 +111,7 @@ export default function MissionPage() {
 
   const spLen = mission.content.spelling.length;
   const diLen = mission.content.dictation.length;
+  const liLen = (mission.content.listening || []).length;
 
   let sectionLabel = "";
   let sectionStep = 0;
@@ -122,9 +126,13 @@ export default function MissionPage() {
       sectionLabel = "Dictation";
       sectionStep = currentStep - spLen + 1;
       sectionTotal = diLen;
+    } else if (currentStep < spLen + diLen + liLen) {
+      sectionLabel = "Listening";
+      sectionStep = currentStep - spLen - diLen + 1;
+      sectionTotal = liLen;
     } else {
       sectionLabel = "Speaking";
-      sectionStep = currentStep - spLen - diLen + 1;
+      sectionStep = currentStep - spLen - diLen - liLen + 1;
       sectionTotal = mission.content.speaking.length;
     }
   }
@@ -138,8 +146,18 @@ export default function MissionPage() {
 
   const spellingScores = scores.slice(0, spLen);
   const dictationScores = scores.slice(spLen, spLen + diLen);
-  const speakingScores = scores.slice(spLen + diLen);
+  const listeningScores = scores.slice(spLen + diLen, spLen + diLen + liLen);
+  const speakingScores = scores.slice(spLen + diLen + liLen);
   const overallScore = avg(scores);
+
+  const scoreBreakdown = [
+    { label: "Spelling", score: avg(spellingScores) },
+    { label: "Dictation", score: avg(dictationScores) },
+    ...(liLen > 0
+      ? [{ label: "Listening", score: avg(listeningScores) }]
+      : []),
+    { label: "Speaking", score: avg(speakingScores) },
+  ];
 
   const current = exercises[currentStep];
 
@@ -202,11 +220,7 @@ export default function MissionPage() {
               <h2 className="text-xs font-medium text-ink-faded uppercase tracking-wider">
                 Score Breakdown
               </h2>
-              {[
-                { label: "Spelling", score: avg(spellingScores) },
-                { label: "Dictation", score: avg(dictationScores) },
-                { label: "Speaking", score: avg(speakingScores) },
-              ].map(({ label, score }) => (
+              {scoreBreakdown.map(({ label, score }) => (
                 <div key={label} className="flex items-center gap-3">
                   <span className="text-sm text-ink-faded w-20">{label}</span>
                   <div className="flex-1 h-2 bg-rule rounded-full overflow-hidden">
