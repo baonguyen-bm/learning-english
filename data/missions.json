@@ -1,6 +1,7 @@
 [
   {
     "day_number": 1,
+    "difficulty": 2,
     "title": "Daily Standup",
     "description": "Vocabulary and phrases for daily standup meetings and status updates.",
     "content": {
@@ -16,6 +17,22 @@
         { "text": "There is a blocker on the payment integration that needs attention.", "hint": "Raising issues" },
         { "text": "I am going to work on the database migration today.", "hint": "Planning ahead" }
       ],
+      "listening": [
+        {
+          "title": "Standup Blocker Discussion",
+          "dialog": [
+            { "speaker": "Alex", "text": "Good morning everyone. Let's start with updates. Tom, what did you work on yesterday?" },
+            { "speaker": "Tom", "text": "I was working on the payment integration, but I hit a blocker with the API credentials." },
+            { "speaker": "Alex", "text": "That sounds urgent. Have you reached out to the DevOps team about it?" },
+            { "speaker": "Tom", "text": "Not yet. I was hoping to get it sorted this morning. If not, I'll escalate it." }
+          ],
+          "questions": [
+            { "question": "What is Tom's blocker?", "options": ["The database is down", "API credentials issue", "Code review pending"], "correct": 1 },
+            { "question": "Who does Tom plan to contact if the issue persists?", "options": ["The client", "The DevOps team", "His manager"], "correct": 1 },
+            { "question": "When did Tom encounter the blocker?", "options": ["This morning", "Yesterday", "Last week"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "My main priority today is finishing the API documentation." },
         { "text": "I need some help resolving a dependency conflict in the build." }
@@ -24,6 +41,7 @@
   },
   {
     "day_number": 2,
+    "difficulty": 2,
     "title": "Email Communication",
     "description": "Professional email writing, tone, and common phrases for the workplace.",
     "content": {
@@ -39,6 +57,22 @@
         { "text": "I wanted to follow up on our conversation from last week.", "hint": "Following up" },
         { "text": "Could you please confirm the meeting time at your earliest convenience?", "hint": "Requesting confirmation" }
       ],
+      "listening": [
+        {
+          "title": "Clarifying an Email Request",
+          "dialog": [
+            { "speaker": "Maria", "text": "Hey James, did you see the email from the client about the revised requirements?" },
+            { "speaker": "James", "text": "Yes, but the attachment was missing. I replied asking them to resend it." },
+            { "speaker": "Maria", "text": "Good. We need those requirements by Friday to stay on schedule." },
+            { "speaker": "James", "text": "I'll follow up again this afternoon if we haven't heard back." }
+          ],
+          "questions": [
+            { "question": "What was wrong with the client's email?", "options": ["It was sent to the wrong person", "The attachment was missing", "The deadline was unclear"], "correct": 1 },
+            { "question": "When do they need the requirements?", "options": ["By tomorrow", "By Friday", "By next week"], "correct": 1 },
+            { "question": "What will James do if there's no response?", "options": ["Escalate to the manager", "Follow up this afternoon", "Start without the requirements"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "Thank you for your prompt response regarding the contract changes." },
         { "text": "I apologize for any inconvenience this delay may have caused." }
@@ -47,6 +81,7 @@
   },
   {
     "day_number": 3,
+    "difficulty": 2,
     "title": "Team Meeting",
     "description": "Phrases for participating effectively in team discussions and brainstorming sessions.",
     "content": {
@@ -62,6 +97,22 @@
         { "text": "I think we should consider an alternative approach to this problem.", "hint": "Offering suggestions" },
         { "text": "Does anyone have questions before we move on to the next topic?", "hint": "Transitioning" }
       ],
+      "listening": [
+        {
+          "title": "Discussing Agenda Priorities",
+          "dialog": [
+            { "speaker": "Sara", "text": "Before we start, I'd like to adjust the agenda. The security audit should be moved up." },
+            { "speaker": "Kevin", "text": "I agree. The compliance deadline is next week, so we need to prioritize it." },
+            { "speaker": "Sara", "text": "Great. Let's discuss that first, then move to the feature roadmap." },
+            { "speaker": "Kevin", "text": "Sounds good. I'll keep my roadmap update brief so we have enough time." }
+          ],
+          "questions": [
+            { "question": "What does Sara want to prioritize?", "options": ["Feature roadmap", "Security audit", "Budget review"], "correct": 1 },
+            { "question": "Why is it urgent?", "options": ["A client is waiting", "The compliance deadline is next week", "The team is behind schedule"], "correct": 1 },
+            { "question": "How will Kevin adjust?", "options": ["Skip his update", "Keep his update brief", "Reschedule the meeting"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "I would like to add a point to what Sarah just mentioned about the timeline." },
         { "text": "Can we schedule a follow-up meeting to discuss this in more detail?" }
@@ -70,6 +121,7 @@
   },
   {
     "day_number": 4,
+    "difficulty": 2,
     "title": "Code Review Feedback",
     "description": "Technical vocabulary and constructive phrases for giving and receiving code reviews.",
     "content": {
@@ -85,6 +137,22 @@
         { "text": "I noticed a potential memory leak in the event listener setup.", "hint": "Identifying bugs" },
         { "text": "Great work on the error handling, it covers all the edge cases.", "hint": "Positive feedback" }
       ],
+      "listening": [
+        {
+          "title": "Reviewing a Pull Request",
+          "dialog": [
+            { "speaker": "Lisa", "text": "I reviewed your pull request. The code looks clean, but I have a concern about the error handling." },
+            { "speaker": "Dan", "text": "Sure, what's the issue?" },
+            { "speaker": "Lisa", "text": "The catch block swallows the error silently. We should at least log it for debugging." },
+            { "speaker": "Dan", "text": "Good catch. I'll add proper error logging and push an update." }
+          ],
+          "questions": [
+            { "question": "What did Lisa like about Dan's code?", "options": ["The test coverage", "The code was clean", "The documentation"], "correct": 1 },
+            { "question": "What is Lisa's concern?", "options": ["Missing tests", "Silent error handling", "Performance issues"], "correct": 1 },
+            { "question": "How will Dan address the feedback?", "options": ["Rewrite the function", "Add error logging", "Remove the catch block"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "Could you explain the reasoning behind this design decision?" },
         { "text": "I suggest we add unit tests before merging this pull request." }
@@ -93,6 +161,7 @@
   },
   {
     "day_number": 5,
+    "difficulty": 2,
     "title": "Client Communication",
     "description": "Professional language for client calls, presentations, and relationship management.",
     "content": {
@@ -108,6 +177,22 @@
         { "text": "I would like to walk you through the proposed solution for this feature.", "hint": "Presenting ideas" },
         { "text": "Based on your feedback, we have adjusted the project scope accordingly.", "hint": "Responding to feedback" }
       ],
+      "listening": [
+        {
+          "title": "Scope Change Discussion",
+          "dialog": [
+            { "speaker": "Client", "text": "We'd like to add a reporting dashboard to the current sprint. Is that possible?" },
+            { "speaker": "Dev Lead", "text": "We can definitely build it, but adding it now would push the delivery date by about two weeks." },
+            { "speaker": "Client", "text": "I see. What if we simplify it to just the key metrics for now?" },
+            { "speaker": "Dev Lead", "text": "That could work. A simplified version would only add three to four days. Let me draft a revised timeline." }
+          ],
+          "questions": [
+            { "question": "What does the client want to add?", "options": ["User authentication", "A reporting dashboard", "Mobile support"], "correct": 1 },
+            { "question": "How long would the full version delay the project?", "options": ["One week", "Two weeks", "One month"], "correct": 1 },
+            { "question": "What compromise is suggested?", "options": ["Drop the feature entirely", "Build a simplified version", "Hire more developers"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "We appreciate your patience as we work through these technical challenges." },
         { "text": "Could you clarify your expectations for the user interface design?" }
@@ -116,6 +201,7 @@
   },
   {
     "day_number": 6,
+    "difficulty": 2,
     "title": "Sprint Planning",
     "description": "Vocabulary for agile ceremonies, estimation, and sprint organization.",
     "content": {
@@ -131,6 +217,22 @@
         { "text": "We need to identify any potential bottlenecks before the sprint begins.", "hint": "Risk assessment" },
         { "text": "The velocity from last sprint suggests we can complete twelve points.", "hint": "Capacity planning" }
       ],
+      "listening": [
+        {
+          "title": "Preparing a Demo",
+          "dialog": [
+            { "speaker": "PM", "text": "The sprint demo is tomorrow. Are we ready to show the new search feature?" },
+            { "speaker": "Dev", "text": "Almost. The basic search works, but the filtering isn't complete yet." },
+            { "speaker": "PM", "text": "Can we demo what's working and mention filtering as a next step?" },
+            { "speaker": "Dev", "text": "Yes, that's a good approach. I'll prepare a test dataset to make the demo smooth." }
+          ],
+          "questions": [
+            { "question": "When is the sprint demo?", "options": ["Today", "Tomorrow", "Next week"], "correct": 1 },
+            { "question": "What part is not complete?", "options": ["Basic search", "Filtering", "The login page"], "correct": 1 },
+            { "question": "What will the developer prepare?", "options": ["New slides", "A test dataset", "Additional features"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "I believe this user story needs to be broken down into smaller tasks." },
         { "text": "Our retrospective showed that communication was our biggest area for improvement." }
@@ -139,6 +241,7 @@
   },
   {
     "day_number": 7,
+    "difficulty": 2,
     "title": "Incident Response",
     "description": "Critical communication phrases for handling production issues and outages.",
     "content": {
@@ -154,9 +257,929 @@
         { "text": "The monitoring dashboard shows that error rates have returned to normal.", "hint": "Recovery confirmation" },
         { "text": "Please document all the steps taken during the incident for the postmortem.", "hint": "Documentation" }
       ],
+      "listening": [
+        {
+          "title": "Debugging a Production Issue",
+          "dialog": [
+            { "speaker": "Ops", "text": "We're seeing a spike in five hundred errors on the checkout service. It started about ten minutes ago." },
+            { "speaker": "Dev", "text": "Let me check the logs. It might be related to the deployment we did this morning." },
+            { "speaker": "Ops", "text": "Good idea. Should we roll back the deployment as a precaution?" },
+            { "speaker": "Dev", "text": "Yes, let's roll back first to restore service, then investigate the root cause." }
+          ],
+          "questions": [
+            { "question": "What type of errors are they seeing?", "options": ["Authentication errors", "Five hundred errors", "Timeout errors"], "correct": 1 },
+            { "question": "What might have caused the issue?", "options": ["A network outage", "A morning deployment", "Database corruption"], "correct": 1 },
+            { "question": "What is the immediate action plan?", "options": ["Add more servers", "Roll back the deployment", "Restart the database"], "correct": 1 }
+          ]
+        }
+      ],
       "speaking": [
         { "text": "I am escalating this issue to the infrastructure team for immediate attention." },
         { "text": "We should implement additional monitoring to catch this type of failure earlier." }
+      ]
+    }
+  },
+  {
+    "day_number": 8,
+    "difficulty": 2,
+    "title": "Technical Documentation",
+    "description": "Writing clear technical docs, READMEs, and API documentation.",
+    "content": {
+      "spelling": [
+        { "word": "documentation", "definition": "Written material that explains how software works.", "phonetic": "/ˌdɒk.jʊ.menˈteɪ.ʃən/", "syllables": "doc·u·men·ta·tion" },
+        { "word": "specification", "definition": "A detailed description of design and requirements.", "phonetic": "/ˌspes.ɪ.fɪˈkeɪ.ʃən/", "syllables": "spec·i·fi·ca·tion" },
+        { "word": "parameter", "definition": "A variable that defines a particular aspect of a function.", "phonetic": "/pəˈræm.ɪ.tər/", "syllables": "pa·ram·e·ter" },
+        { "word": "authentication", "definition": "The process of verifying the identity of a user.", "phonetic": "/ɔːˌθen.tɪˈkeɪ.ʃən/", "syllables": "au·then·ti·ca·tion" },
+        { "word": "configuration", "definition": "The arrangement of settings for a system or application.", "phonetic": "/kənˌfɪɡ.jəˈreɪ.ʃən/", "syllables": "con·fig·u·ra·tion" }
+      ],
+      "dictation": [
+        { "text": "The API accepts a JSON payload with the required authentication token.", "hint": "API docs" },
+        { "text": "Please update the README file with the new installation instructions.", "hint": "Developer guide" },
+        { "text": "Each endpoint returns a standard response format with status and data fields.", "hint": "Response format" }
+      ],
+      "listening": [
+        {
+          "title": "Discussing API Documentation",
+          "dialog": [
+            { "speaker": "Lead", "text": "The new API endpoints need documentation before we share them with the frontend team." },
+            { "speaker": "Dev", "text": "I can write the docs. Should I use Swagger or keep it in the README?" },
+            { "speaker": "Lead", "text": "Let's use Swagger for the API reference and the README for the getting started guide." },
+            { "speaker": "Dev", "text": "Makes sense. I'll have it ready by end of day." }
+          ],
+          "questions": [
+            { "question": "Who needs the API documentation?", "options": ["The client", "The frontend team", "The QA team"], "correct": 1 },
+            { "question": "What will be used for the API reference?", "options": ["A wiki page", "Swagger", "A PDF document"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Make sure to include code examples for each API endpoint in the documentation." },
+        { "text": "The configuration file needs a description of each environment variable." }
+      ]
+    }
+  },
+  {
+    "day_number": 9,
+    "difficulty": 2,
+    "title": "Performance Review",
+    "description": "Vocabulary for self-assessments, goal setting, and feedback conversations.",
+    "content": {
+      "spelling": [
+        { "word": "achievement", "definition": "A thing done successfully with effort or skill.", "phonetic": "/əˈtʃiːv.mənt/", "syllables": "a·chieve·ment" },
+        { "word": "initiative", "definition": "The ability to act independently and take the lead.", "phonetic": "/ɪˈnɪʃ.ə.tɪv/", "syllables": "i·ni·tia·tive" },
+        { "word": "constructive", "definition": "Serving a useful purpose or tending to build up.", "phonetic": "/kənˈstrʌk.tɪv/", "syllables": "con·struc·tive" },
+        { "word": "accountability", "definition": "The fact of being responsible for one's actions.", "phonetic": "/əˌkaʊn.təˈbɪl.ɪ.ti/", "syllables": "ac·count·a·bil·i·ty" },
+        { "word": "professional", "definition": "Relating to a profession and its high standards.", "phonetic": "/prəˈfeʃ.ən.əl/", "syllables": "pro·fes·sion·al" }
+      ],
+      "dictation": [
+        { "text": "I took the initiative to improve our deployment pipeline this quarter.", "hint": "Self-assessment" },
+        { "text": "One area for growth is communicating technical decisions more clearly.", "hint": "Areas for improvement" },
+        { "text": "My goal for next quarter is to mentor two junior developers on the team.", "hint": "Goal setting" }
+      ],
+      "listening": [
+        {
+          "title": "Quarterly Feedback Session",
+          "dialog": [
+            { "speaker": "Manager", "text": "Overall you've had a strong quarter. The CI pipeline improvements were a great initiative." },
+            { "speaker": "Dev", "text": "Thank you. I'd also like to take on more architecture decisions next quarter." },
+            { "speaker": "Manager", "text": "That's a good goal. I'd suggest pairing with the senior architect on the next project." },
+            { "speaker": "Dev", "text": "That sounds like a great opportunity. I'll reach out to them." }
+          ],
+          "questions": [
+            { "question": "What was highlighted as a strong achievement?", "options": ["Bug fixing speed", "CI pipeline improvements", "Client communication"], "correct": 1 },
+            { "question": "What does the developer want to do next quarter?", "options": ["Switch teams", "Take on architecture decisions", "Work remotely more"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I believe my biggest achievement this quarter was leading the migration project." },
+        { "text": "I appreciate the constructive feedback and will work on those areas." }
+      ]
+    }
+  },
+  {
+    "day_number": 10,
+    "difficulty": 2,
+    "title": "Remote Collaboration",
+    "description": "Communication strategies for distributed teams and async work.",
+    "content": {
+      "spelling": [
+        { "word": "asynchronous", "definition": "Not occurring at the same time; working independently.", "phonetic": "/eɪˈsɪŋ.krə.nəs/", "syllables": "a·syn·chro·nous" },
+        { "word": "bandwidth", "definition": "The capacity to handle work or communication demands.", "phonetic": "/ˈbænd.wɪdθ/", "syllables": "band·width" },
+        { "word": "timezone", "definition": "A region where the same standard time is used.", "phonetic": "/ˈtaɪm.zoʊn/", "syllables": "time·zone" },
+        { "word": "synchronize", "definition": "To cause things to happen at the same time or rate.", "phonetic": "/ˈsɪŋ.krə.naɪz/", "syllables": "syn·chro·nize" },
+        { "word": "availability", "definition": "The quality of being able to be used or obtained.", "phonetic": "/əˌveɪ.ləˈbɪl.ɪ.ti/", "syllables": "a·vail·a·bil·i·ty" }
+      ],
+      "dictation": [
+        { "text": "Let's switch to asynchronous updates since our timezones don't overlap much.", "hint": "Async work" },
+        { "text": "I'll record a short video walkthrough so the team in Europe can review it tomorrow.", "hint": "Documentation" },
+        { "text": "Please update the shared document with your comments before the sync meeting.", "hint": "Collaboration" }
+      ],
+      "listening": [
+        {
+          "title": "Coordinating Across Timezones",
+          "dialog": [
+            { "speaker": "US Dev", "text": "We're finding it hard to get overlap with the Singapore team for code reviews." },
+            { "speaker": "Manager", "text": "What if we designate a two-hour overlap window each day for synchronous reviews?" },
+            { "speaker": "US Dev", "text": "That could work if it's early morning for us. Around eight AM Eastern?" },
+            { "speaker": "Manager", "text": "Let me check with the Singapore team. We might need to alternate the overlap times weekly." }
+          ],
+          "questions": [
+            { "question": "What's the main collaboration challenge?", "options": ["Language barrier", "Timezone overlap for code reviews", "Internet connectivity"], "correct": 1 },
+            { "question": "What solution is proposed?", "options": ["Hire local reviewers", "A two-hour overlap window", "Cancel code reviews"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I'll document my progress in the shared channel so everyone stays aligned." },
+        { "text": "Do you have bandwidth to review this pull request before end of day?" }
+      ]
+    }
+  },
+
+  {
+    "day_number": 1,
+    "difficulty": 1,
+    "title": "Hello Team",
+    "description": "Basic greetings and introductions in a work setting.",
+    "content": {
+      "spelling": [
+        { "word": "hello", "definition": "A greeting used to meet someone.", "phonetic": "/həˈloʊ/", "syllables": "hel·lo" },
+        { "word": "meeting", "definition": "A gathering of people to discuss things.", "phonetic": "/ˈmiː.tɪŋ/", "syllables": "meet·ing" },
+        { "word": "team", "definition": "A group of people working together.", "phonetic": "/tiːm/", "syllables": "team" },
+        { "word": "project", "definition": "A planned piece of work.", "phonetic": "/ˈprɒdʒ.ekt/", "syllables": "proj·ect" },
+        { "word": "welcome", "definition": "A friendly greeting to someone arriving.", "phonetic": "/ˈwel.kəm/", "syllables": "wel·come" }
+      ],
+      "dictation": [
+        { "text": "Hello, my name is Alex.", "hint": "Self-introduction" },
+        { "text": "Nice to meet you.", "hint": "Greeting" },
+        { "text": "I am new to the team.", "hint": "Joining a team" }
+      ],
+      "listening": [
+        {
+          "title": "Meeting a New Colleague",
+          "dialog": [
+            { "speaker": "Anna", "text": "Hi! Welcome to the team. I'm Anna." },
+            { "speaker": "Ben", "text": "Thank you. I'm Ben. Nice to meet you." },
+            { "speaker": "Anna", "text": "Nice to meet you too. Let me show you around the office." }
+          ],
+          "questions": [
+            { "question": "Who is the new team member?", "options": ["Anna", "Ben", "Tom"], "correct": 1 },
+            { "question": "What does Anna offer to do?", "options": ["Have lunch", "Show Ben around", "Start a meeting"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Hello, nice to meet you." },
+        { "text": "I am happy to join the team." }
+      ]
+    }
+  },
+  {
+    "day_number": 2,
+    "difficulty": 1,
+    "title": "My Desk",
+    "description": "Common office items and simple requests.",
+    "content": {
+      "spelling": [
+        { "word": "computer", "definition": "A machine for working with information.", "phonetic": "/kəmˈpjuː.tər/", "syllables": "com·pu·ter" },
+        { "word": "keyboard", "definition": "A set of keys used to type on a computer.", "phonetic": "/ˈkiː.bɔːrd/", "syllables": "key·board" },
+        { "word": "screen", "definition": "The display surface of a computer.", "phonetic": "/skriːn/", "syllables": "screen" },
+        { "word": "password", "definition": "A secret word used to access a system.", "phonetic": "/ˈpæs.wɜːrd/", "syllables": "pass·word" },
+        { "word": "charger", "definition": "A device used to charge a battery.", "phonetic": "/ˈtʃɑːr.dʒər/", "syllables": "char·ger" }
+      ],
+      "dictation": [
+        { "text": "Where is the printer?", "hint": "Asking for location" },
+        { "text": "Can I borrow a charger?", "hint": "Making a request" },
+        { "text": "My password is not working.", "hint": "Reporting a problem" }
+      ],
+      "listening": [
+        {
+          "title": "Setting Up a Desk",
+          "dialog": [
+            { "speaker": "IT", "text": "Here is your computer and keyboard. Do you need a mouse?" },
+            { "speaker": "New Hire", "text": "Yes, please. And where can I charge my phone?" },
+            { "speaker": "IT", "text": "There's a power outlet under the desk." }
+          ],
+          "questions": [
+            { "question": "What does the new hire need?", "options": ["A mouse", "A new keyboard", "A bigger screen"], "correct": 0 },
+            { "question": "Where is the power outlet?", "options": ["On the wall", "Under the desk", "In the drawer"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Can you help me set up my computer?" },
+        { "text": "I need a new password for my account." }
+      ]
+    }
+  },
+  {
+    "day_number": 3,
+    "difficulty": 1,
+    "title": "Lunch Break",
+    "description": "Talking about food, breaks, and casual conversations.",
+    "content": {
+      "spelling": [
+        { "word": "lunch", "definition": "A meal eaten in the middle of the day.", "phonetic": "/lʌntʃ/", "syllables": "lunch" },
+        { "word": "coffee", "definition": "A hot drink made from roasted beans.", "phonetic": "/ˈkɒf.i/", "syllables": "cof·fee" },
+        { "word": "break", "definition": "A pause from work for rest.", "phonetic": "/breɪk/", "syllables": "break" },
+        { "word": "kitchen", "definition": "A room where food is prepared.", "phonetic": "/ˈkɪtʃ.ɪn/", "syllables": "kitch·en" },
+        { "word": "hungry", "definition": "Feeling the need to eat food.", "phonetic": "/ˈhʌŋ.ɡri/", "syllables": "hun·gry" }
+      ],
+      "dictation": [
+        { "text": "Do you want to get lunch?", "hint": "Invitation" },
+        { "text": "The coffee machine is broken.", "hint": "Reporting" },
+        { "text": "I usually eat at twelve thirty.", "hint": "Schedule" }
+      ],
+      "listening": [
+        {
+          "title": "Planning Lunch",
+          "dialog": [
+            { "speaker": "Sam", "text": "Hey, are you hungry? I'm going to grab lunch." },
+            { "speaker": "Kim", "text": "Sure! Where are you going?" },
+            { "speaker": "Sam", "text": "There's a good sandwich place around the corner." }
+          ],
+          "questions": [
+            { "question": "What does Sam want to do?", "options": ["Take a walk", "Grab lunch", "Have coffee"], "correct": 1 },
+            { "question": "Where is the sandwich place?", "options": ["Across the street", "Around the corner", "Next building"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Would you like to join me for coffee?" },
+        { "text": "I need a short break." }
+      ]
+    }
+  },
+  {
+    "day_number": 4,
+    "difficulty": 1,
+    "title": "Simple Tasks",
+    "description": "Talking about daily work tasks and progress.",
+    "content": {
+      "spelling": [
+        { "word": "task", "definition": "A piece of work to be done.", "phonetic": "/tæsk/", "syllables": "task" },
+        { "word": "finish", "definition": "To bring something to an end.", "phonetic": "/ˈfɪn.ɪʃ/", "syllables": "fin·ish" },
+        { "word": "update", "definition": "To make something more current.", "phonetic": "/ʌpˈdeɪt/", "syllables": "up·date" },
+        { "word": "problem", "definition": "A matter that is difficult to deal with.", "phonetic": "/ˈprɒb.ləm/", "syllables": "prob·lem" },
+        { "word": "deadline", "definition": "The latest time by which something must be done.", "phonetic": "/ˈded.laɪn/", "syllables": "dead·line" }
+      ],
+      "dictation": [
+        { "text": "I finished my task today.", "hint": "Status update" },
+        { "text": "There is a small problem.", "hint": "Reporting issues" },
+        { "text": "The deadline is on Friday.", "hint": "Time management" }
+      ],
+      "listening": [
+        {
+          "title": "Checking on Progress",
+          "dialog": [
+            { "speaker": "Boss", "text": "Hi, how is your task going?" },
+            { "speaker": "Worker", "text": "I'm almost done. I just need to fix one small problem." },
+            { "speaker": "Boss", "text": "Okay, great. The deadline is Friday, so we have time." }
+          ],
+          "questions": [
+            { "question": "How is the worker's task?", "options": ["Not started", "Almost done", "Finished"], "correct": 1 },
+            { "question": "When is the deadline?", "options": ["Today", "Thursday", "Friday"], "correct": 2 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I need more time to finish this task." },
+        { "text": "Can you help me with this problem?" }
+      ]
+    }
+  },
+  {
+    "day_number": 5,
+    "difficulty": 1,
+    "title": "Asking for Help",
+    "description": "How to ask questions and request assistance politely.",
+    "content": {
+      "spelling": [
+        { "word": "question", "definition": "Something you ask to get information.", "phonetic": "/ˈkwes.tʃən/", "syllables": "ques·tion" },
+        { "word": "explain", "definition": "To make something clear or easy to understand.", "phonetic": "/ɪkˈspleɪn/", "syllables": "ex·plain" },
+        { "word": "understand", "definition": "To know the meaning of something.", "phonetic": "/ˌʌn.dəˈstænd/", "syllables": "un·der·stand" },
+        { "word": "example", "definition": "A thing that shows what something is like.", "phonetic": "/ɪɡˈzæm.pəl/", "syllables": "ex·am·ple" },
+        { "word": "repeat", "definition": "To say or do something again.", "phonetic": "/rɪˈpiːt/", "syllables": "re·peat" }
+      ],
+      "dictation": [
+        { "text": "Can you explain that again?", "hint": "Asking for clarity" },
+        { "text": "I do not understand this part.", "hint": "Expressing confusion" },
+        { "text": "Could you give me an example?", "hint": "Requesting help" }
+      ],
+      "listening": [
+        {
+          "title": "Asking a Colleague",
+          "dialog": [
+            { "speaker": "Junior", "text": "Excuse me, I have a question about this code." },
+            { "speaker": "Senior", "text": "Sure, what do you need help with?" },
+            { "speaker": "Junior", "text": "I don't understand what this function does. Can you explain?" },
+            { "speaker": "Senior", "text": "Of course. This function checks if the user is logged in." }
+          ],
+          "questions": [
+            { "question": "What does the junior developer need?", "options": ["A new task", "Help with code", "A coffee break"], "correct": 1 },
+            { "question": "What does the function do?", "options": ["Saves data", "Checks if user is logged in", "Sends an email"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Could you please repeat that?" },
+        { "text": "I have a quick question about the project." }
+      ]
+    }
+  },
+  {
+    "day_number": 6,
+    "difficulty": 1,
+    "title": "Schedule and Time",
+    "description": "Talking about schedules, appointments, and deadlines.",
+    "content": {
+      "spelling": [
+        { "word": "schedule", "definition": "A plan of when things will happen.", "phonetic": "/ˈʃed.juːl/", "syllables": "sched·ule" },
+        { "word": "morning", "definition": "The early part of the day.", "phonetic": "/ˈmɔːr.nɪŋ/", "syllables": "morn·ing" },
+        { "word": "afternoon", "definition": "The time from noon until evening.", "phonetic": "/ˌæf.tərˈnuːn/", "syllables": "af·ter·noon" },
+        { "word": "available", "definition": "Free to be used or to do something.", "phonetic": "/əˈveɪ.lə.bəl/", "syllables": "a·vail·a·ble" },
+        { "word": "calendar", "definition": "A chart showing the days of the year.", "phonetic": "/ˈkæl.ən.dər/", "syllables": "cal·en·dar" }
+      ],
+      "dictation": [
+        { "text": "The meeting is at ten in the morning.", "hint": "Time" },
+        { "text": "I am free this afternoon.", "hint": "Availability" },
+        { "text": "Can we change the schedule?", "hint": "Rescheduling" }
+      ],
+      "listening": [
+        {
+          "title": "Booking a Meeting Room",
+          "dialog": [
+            { "speaker": "Colleague A", "text": "Are you available for a meeting this afternoon?" },
+            { "speaker": "Colleague B", "text": "Yes, I'm free after two o'clock." },
+            { "speaker": "Colleague A", "text": "Perfect. I'll book the meeting room for two thirty." }
+          ],
+          "questions": [
+            { "question": "When is the colleague free?", "options": ["In the morning", "After two o'clock", "All day"], "correct": 1 },
+            { "question": "What time is the meeting booked for?", "options": ["Two o'clock", "Two thirty", "Three o'clock"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "What time is the meeting tomorrow?" },
+        { "text": "I am not available on Monday morning." }
+      ]
+    }
+  },
+  {
+    "day_number": 7,
+    "difficulty": 1,
+    "title": "Saying Thank You",
+    "description": "Polite expressions of gratitude and appreciation at work.",
+    "content": {
+      "spelling": [
+        { "word": "thanks", "definition": "An expression of gratitude.", "phonetic": "/θæŋks/", "syllables": "thanks" },
+        { "word": "appreciate", "definition": "To recognize the value of something.", "phonetic": "/əˈpriː.ʃi.eɪt/", "syllables": "ap·pre·ci·ate" },
+        { "word": "helpful", "definition": "Giving help; useful.", "phonetic": "/ˈhelp.fʊl/", "syllables": "help·ful" },
+        { "word": "grateful", "definition": "Feeling thankful for something.", "phonetic": "/ˈɡreɪt.fʊl/", "syllables": "grate·ful" },
+        { "word": "support", "definition": "Help or encouragement given to someone.", "phonetic": "/səˈpɔːrt/", "syllables": "sup·port" }
+      ],
+      "dictation": [
+        { "text": "Thank you for your help.", "hint": "Gratitude" },
+        { "text": "I really appreciate your support.", "hint": "Showing thanks" },
+        { "text": "That was very helpful.", "hint": "Feedback" }
+      ],
+      "listening": [
+        {
+          "title": "Thanking a Colleague",
+          "dialog": [
+            { "speaker": "Dev A", "text": "Thanks for helping me fix that bug. I was stuck for hours." },
+            { "speaker": "Dev B", "text": "No problem at all! I'm glad I could help." },
+            { "speaker": "Dev A", "text": "I really appreciate it. Let me know if you need anything." }
+          ],
+          "questions": [
+            { "question": "What did Dev B help with?", "options": ["A presentation", "Fixing a bug", "Writing an email"], "correct": 1 },
+            { "question": "How does Dev A feel?", "options": ["Frustrated", "Grateful", "Confused"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Thank you so much for your help today." },
+        { "text": "I am very grateful for your support." }
+      ]
+    }
+  },
+  {
+    "day_number": 8,
+    "difficulty": 1,
+    "title": "Simple Email",
+    "description": "Writing short and clear emails.",
+    "content": {
+      "spelling": [
+        { "word": "email", "definition": "An electronic message sent via the internet.", "phonetic": "/ˈiː.meɪl/", "syllables": "e·mail" },
+        { "word": "subject", "definition": "The topic of a message or discussion.", "phonetic": "/ˈsʌb.dʒekt/", "syllables": "sub·ject" },
+        { "word": "reply", "definition": "To respond to a message.", "phonetic": "/rɪˈplaɪ/", "syllables": "re·ply" },
+        { "word": "forward", "definition": "To send a message on to another person.", "phonetic": "/ˈfɔːr.wərd/", "syllables": "for·ward" },
+        { "word": "receive", "definition": "To get or be given something.", "phonetic": "/rɪˈsiːv/", "syllables": "re·ceive" }
+      ],
+      "dictation": [
+        { "text": "Please reply to this email.", "hint": "Request" },
+        { "text": "I will send the file today.", "hint": "Promise" },
+        { "text": "Did you receive my message?", "hint": "Checking" }
+      ],
+      "listening": [
+        {
+          "title": "Email About a Meeting",
+          "dialog": [
+            { "speaker": "Sender", "text": "I just sent you an email about tomorrow's meeting. Did you get it?" },
+            { "speaker": "Receiver", "text": "Let me check. Yes, I got it. I'll reply soon." },
+            { "speaker": "Sender", "text": "Great. Please confirm if the time works for you." }
+          ],
+          "questions": [
+            { "question": "What is the email about?", "options": ["A project update", "Tomorrow's meeting", "A holiday plan"], "correct": 1 },
+            { "question": "What should the receiver do?", "options": ["Forward the email", "Delete it", "Confirm the time"], "correct": 2 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I will check my email and reply soon." },
+        { "text": "Please forward this email to the team." }
+      ]
+    }
+  },
+  {
+    "day_number": 9,
+    "difficulty": 1,
+    "title": "Numbers and Data",
+    "description": "Talking about numbers, percentages, and simple data.",
+    "content": {
+      "spelling": [
+        { "word": "percent", "definition": "A rate or proportion per hundred.", "phonetic": "/pərˈsent/", "syllables": "per·cent" },
+        { "word": "total", "definition": "The complete amount.", "phonetic": "/ˈtoʊ.təl/", "syllables": "to·tal" },
+        { "word": "increase", "definition": "To become larger in amount.", "phonetic": "/ɪnˈkriːs/", "syllables": "in·crease" },
+        { "word": "decrease", "definition": "To become smaller in amount.", "phonetic": "/dɪˈkriːs/", "syllables": "de·crease" },
+        { "word": "average", "definition": "The typical or middle amount.", "phonetic": "/ˈæv.ər.ɪdʒ/", "syllables": "av·er·age" }
+      ],
+      "dictation": [
+        { "text": "The total is one hundred.", "hint": "Counting" },
+        { "text": "Sales went up by ten percent.", "hint": "Growth" },
+        { "text": "The average score is eighty five.", "hint": "Data" }
+      ],
+      "listening": [
+        {
+          "title": "Discussing a Report",
+          "dialog": [
+            { "speaker": "Manager", "text": "How are the numbers looking this month?" },
+            { "speaker": "Analyst", "text": "Good news. We had a fifteen percent increase in users." },
+            { "speaker": "Manager", "text": "That's great. What about the total revenue?" },
+            { "speaker": "Analyst", "text": "Revenue is up too, by about ten percent." }
+          ],
+          "questions": [
+            { "question": "How much did users increase?", "options": ["Five percent", "Ten percent", "Fifteen percent"], "correct": 2 },
+            { "question": "What happened to revenue?", "options": ["It decreased", "It stayed the same", "It went up"], "correct": 2 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The total number of users is five thousand." },
+        { "text": "We saw an increase of twenty percent this month." }
+      ]
+    }
+  },
+  {
+    "day_number": 10,
+    "difficulty": 1,
+    "title": "End of Day",
+    "description": "Wrapping up work and saying goodbye.",
+    "content": {
+      "spelling": [
+        { "word": "goodbye", "definition": "A word used when parting from someone.", "phonetic": "/ˌɡʊdˈbaɪ/", "syllables": "good·bye" },
+        { "word": "tomorrow", "definition": "The day after today.", "phonetic": "/təˈmɒr.oʊ/", "syllables": "to·mor·row" },
+        { "word": "complete", "definition": "Having all the necessary parts; finished.", "phonetic": "/kəmˈpliːt/", "syllables": "com·plete" },
+        { "word": "progress", "definition": "Forward movement towards a goal.", "phonetic": "/ˈprɒɡ.res/", "syllables": "prog·ress" },
+        { "word": "weekend", "definition": "Saturday and Sunday.", "phonetic": "/ˌwiːkˈend/", "syllables": "week·end" }
+      ],
+      "dictation": [
+        { "text": "I am leaving for the day.", "hint": "End of day" },
+        { "text": "See you tomorrow morning.", "hint": "Farewell" },
+        { "text": "Have a great weekend.", "hint": "Friday goodbye" }
+      ],
+      "listening": [
+        {
+          "title": "Wrapping Up",
+          "dialog": [
+            { "speaker": "Worker", "text": "I'm done for today. I'll continue tomorrow." },
+            { "speaker": "Colleague", "text": "Good job today! See you in the morning." },
+            { "speaker": "Worker", "text": "Thanks! Have a good evening." }
+          ],
+          "questions": [
+            { "question": "When will the worker continue?", "options": ["Tonight", "Tomorrow", "Next week"], "correct": 1 },
+            { "question": "What does the colleague say?", "options": ["Come back now", "Good job today", "Work more"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I made good progress today." },
+        { "text": "Goodbye, see you tomorrow." }
+      ]
+    }
+  },
+
+  {
+    "day_number": 1,
+    "difficulty": 3,
+    "title": "System Architecture Design",
+    "description": "Advanced vocabulary for discussing system design, scalability, and architectural patterns.",
+    "content": {
+      "spelling": [
+        { "word": "microservices", "definition": "An architectural style structuring an application as independently deployable services.", "phonetic": "/ˈmaɪ.kroʊˌsɜːr.vɪ.sɪz/", "syllables": "mi·cro·ser·vic·es" },
+        { "word": "idempotent", "definition": "An operation that produces the same result regardless of how many times it is performed.", "phonetic": "/ˌaɪ.dəmˈpoʊ.tənt/", "syllables": "i·dem·po·tent" },
+        { "word": "orchestration", "definition": "The automated arrangement and coordination of complex systems.", "phonetic": "/ˌɔːr.kɪˈstreɪ.ʃən/", "syllables": "or·ches·tra·tion" },
+        { "word": "resilience", "definition": "The ability of a system to recover from failures and continue operating.", "phonetic": "/rɪˈzɪl.i.əns/", "syllables": "re·sil·ience" },
+        { "word": "interoperability", "definition": "The ability of different systems to exchange and use information.", "phonetic": "/ˌɪn.tər.ɒp.ər.əˈbɪl.ɪ.ti/", "syllables": "in·ter·op·er·a·bil·i·ty" }
+      ],
+      "dictation": [
+        { "text": "We need to ensure the API gateway handles rate limiting and authentication before routing requests to downstream microservices.", "hint": "Architecture discussion" },
+        { "text": "The circuit breaker pattern will prevent cascading failures across our service mesh.", "hint": "Resilience patterns" },
+        { "text": "Implementing eventual consistency with event sourcing requires careful handling of compensating transactions.", "hint": "Distributed systems" }
+      ],
+      "listening": [
+        {
+          "title": "Choosing Between Monolith and Microservices",
+          "dialog": [
+            { "speaker": "Architect", "text": "Given our current team size of eight engineers, I'd recommend starting with a modular monolith rather than jumping straight to microservices." },
+            { "speaker": "CTO", "text": "But what about scalability? We're expecting significant traffic growth next quarter." },
+            { "speaker": "Architect", "text": "We can design the modules with clear boundaries so they're easy to extract into separate services later. This gives us the flexibility without the operational overhead." },
+            { "speaker": "CTO", "text": "That's a pragmatic approach. Let's document the module boundaries as part of the architecture decision record." }
+          ],
+          "questions": [
+            { "question": "Why does the architect recommend a monolith first?", "options": ["It's cheaper to build", "The team size is small for microservices", "Microservices are outdated"], "correct": 1 },
+            { "question": "What is the plan for future scalability?", "options": ["Rewrite everything", "Design modules for easy extraction", "Hire more engineers first"], "correct": 1 },
+            { "question": "What documentation is suggested?", "options": ["User manual", "Architecture decision record", "Test plan"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The distributed tracing implementation reveals a latency bottleneck in our authentication middleware." },
+        { "text": "We should evaluate whether horizontal scaling or vertical scaling better addresses our throughput requirements." }
+      ]
+    }
+  },
+  {
+    "day_number": 2,
+    "difficulty": 3,
+    "title": "Database Optimization",
+    "description": "Advanced database concepts, query optimization, and data modeling strategies.",
+    "content": {
+      "spelling": [
+        { "word": "denormalization", "definition": "Introducing redundancy into a database to improve read performance.", "phonetic": "/diːˌnɔːr.mə.laɪˈzeɪ.ʃən/", "syllables": "de·nor·mal·i·za·tion" },
+        { "word": "partitioning", "definition": "Dividing a database table into smaller, more manageable pieces.", "phonetic": "/pɑːrˈtɪʃ.ən.ɪŋ/", "syllables": "par·ti·tion·ing" },
+        { "word": "materialized", "definition": "Precomputed and stored query results for faster access.", "phonetic": "/məˈtɪr.i.ə.laɪzd/", "syllables": "ma·te·ri·al·ized" },
+        { "word": "concurrency", "definition": "The ability of a system to handle multiple operations simultaneously.", "phonetic": "/kənˈkʌr.ən.si/", "syllables": "con·cur·ren·cy" },
+        { "word": "cardinality", "definition": "The number of unique values in a database column.", "phonetic": "/ˌkɑːr.dɪˈnæl.ɪ.ti/", "syllables": "car·di·nal·i·ty" }
+      ],
+      "dictation": [
+        { "text": "The query execution plan shows a sequential scan instead of utilizing the composite index on user and timestamp.", "hint": "Query analysis" },
+        { "text": "We should consider implementing read replicas to offload analytical queries from the primary database.", "hint": "Scaling reads" },
+        { "text": "The deadlock was caused by two transactions acquiring locks on the same rows in opposite order.", "hint": "Concurrency issues" }
+      ],
+      "listening": [
+        {
+          "title": "Addressing Slow Queries",
+          "dialog": [
+            { "speaker": "DBA", "text": "The dashboard query is taking over three seconds. The explain plan shows it's doing a full table scan on the orders table." },
+            { "speaker": "Dev", "text": "Would adding a composite index on customer ID and order date help?" },
+            { "speaker": "DBA", "text": "That would help, but we should also consider partitioning by date range since the table has over a hundred million rows." },
+            { "speaker": "Dev", "text": "Good point. Let's also look at whether a materialized view would be appropriate for the aggregation part." }
+          ],
+          "questions": [
+            { "question": "What is causing the slow query?", "options": ["Network latency", "Full table scan", "Missing permissions"], "correct": 1 },
+            { "question": "Why is partitioning suggested?", "options": ["To save storage space", "The table has over 100 million rows", "To simplify the schema"], "correct": 1 },
+            { "question": "What is considered for the aggregation?", "options": ["A stored procedure", "A materialized view", "A temporary table"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The high cardinality of the user identifier column makes it an excellent candidate for a B-tree index." },
+        { "text": "We need to implement optimistic locking to handle concurrent updates to the inventory table." }
+      ]
+    }
+  },
+  {
+    "day_number": 3,
+    "difficulty": 3,
+    "title": "Security Engineering",
+    "description": "Security concepts, vulnerability management, and secure coding practices.",
+    "content": {
+      "spelling": [
+        { "word": "cryptographic", "definition": "Relating to the practice of encoding and decoding information securely.", "phonetic": "/ˌkrɪp.təˈɡræf.ɪk/", "syllables": "cryp·to·graph·ic" },
+        { "word": "authorization", "definition": "The function of granting specific access rights to users.", "phonetic": "/ˌɔː.θər.aɪˈzeɪ.ʃən/", "syllables": "au·thor·i·za·tion" },
+        { "word": "sanitization", "definition": "The process of cleaning input data to prevent attacks.", "phonetic": "/ˌsæn.ɪ.taɪˈzeɪ.ʃən/", "syllables": "san·i·ti·za·tion" },
+        { "word": "obfuscation", "definition": "Making code or data difficult to understand intentionally.", "phonetic": "/ˌɒb.fʌsˈkeɪ.ʃən/", "syllables": "ob·fus·ca·tion" },
+        { "word": "penetration", "definition": "An authorized simulated attack on a system to evaluate security.", "phonetic": "/ˌpen.ɪˈtreɪ.ʃən/", "syllables": "pen·e·tra·tion" }
+      ],
+      "dictation": [
+        { "text": "All user inputs must be sanitized and validated on the server side to prevent injection attacks.", "hint": "Input validation" },
+        { "text": "The JSON web token should include an expiration claim and be signed with a strong cryptographic algorithm.", "hint": "Auth tokens" },
+        { "text": "Our penetration test revealed a cross-site scripting vulnerability in the search results page.", "hint": "Security testing" }
+      ],
+      "listening": [
+        {
+          "title": "Responding to a Security Audit",
+          "dialog": [
+            { "speaker": "Security Lead", "text": "The audit found that we're storing API keys in plaintext in the configuration files. This is a critical finding." },
+            { "speaker": "Dev Lead", "text": "I agree. We should migrate to a secrets management solution like HashiCorp Vault." },
+            { "speaker": "Security Lead", "text": "Also, several endpoints lack proper authorization checks. Users can access resources belonging to other accounts." },
+            { "speaker": "Dev Lead", "text": "We'll implement row-level security and add middleware to validate ownership on every request." }
+          ],
+          "questions": [
+            { "question": "What critical issue was found with API keys?", "options": ["They expired too quickly", "They were stored in plaintext", "They were shared publicly"], "correct": 1 },
+            { "question": "What tool is suggested for secrets management?", "options": ["AWS Lambda", "HashiCorp Vault", "GitHub Actions"], "correct": 1 },
+            { "question": "What authorization problem exists?", "options": ["Users can't log in", "Users can access other accounts' resources", "Admin passwords are weak"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The authorization middleware must verify that the requesting user has the appropriate role-based permissions." },
+        { "text": "We need to implement certificate pinning to prevent man-in-the-middle attacks on our mobile application." }
+      ]
+    }
+  },
+  {
+    "day_number": 4,
+    "difficulty": 3,
+    "title": "Cloud Infrastructure",
+    "description": "DevOps and cloud computing terminology for modern deployment strategies.",
+    "content": {
+      "spelling": [
+        { "word": "containerization", "definition": "Packaging applications with their dependencies into lightweight portable units.", "phonetic": "/kənˌteɪ.nər.aɪˈzeɪ.ʃən/", "syllables": "con·tain·er·i·za·tion" },
+        { "word": "infrastructure", "definition": "The underlying foundation of IT resources supporting systems.", "phonetic": "/ˈɪn.frə.strʌk.tʃər/", "syllables": "in·fra·struc·ture" },
+        { "word": "observability", "definition": "The ability to understand a system's internal state from its external outputs.", "phonetic": "/əbˌzɜːr.vəˈbɪl.ɪ.ti/", "syllables": "ob·serv·a·bil·i·ty" },
+        { "word": "provisioning", "definition": "The automated setup and configuration of IT resources.", "phonetic": "/prəˈvɪʒ.ən.ɪŋ/", "syllables": "pro·vi·sion·ing" },
+        { "word": "immutability", "definition": "The property of infrastructure that cannot be modified after creation.", "phonetic": "/ˌɪ.mjuː.təˈbɪl.ɪ.ti/", "syllables": "im·mu·ta·bil·i·ty" }
+      ],
+      "dictation": [
+        { "text": "The infrastructure-as-code approach ensures reproducible deployments across all environments.", "hint": "IaC principles" },
+        { "text": "We should implement canary deployments to gradually roll out changes and monitor for regressions.", "hint": "Deployment strategy" },
+        { "text": "The Kubernetes cluster needs horizontal pod autoscaling configured based on CPU and memory utilization.", "hint": "Container orchestration" }
+      ],
+      "listening": [
+        {
+          "title": "Planning a Cloud Migration",
+          "dialog": [
+            { "speaker": "VP Eng", "text": "What's our strategy for migrating the monolith to the cloud? I want minimal downtime." },
+            { "speaker": "DevOps", "text": "I recommend a strangler fig pattern. We'll route traffic through a reverse proxy and gradually redirect endpoints to the new cloud services." },
+            { "speaker": "VP Eng", "text": "How long would the migration take?" },
+            { "speaker": "DevOps", "text": "About six months. Each service migration takes two to three weeks, and we have twelve services to extract." }
+          ],
+          "questions": [
+            { "question": "What migration pattern is recommended?", "options": ["Big bang migration", "Strangler fig pattern", "Blue-green deployment"], "correct": 1 },
+            { "question": "How long will the full migration take?", "options": ["Three months", "Six months", "One year"], "correct": 1 },
+            { "question": "How many services need to be extracted?", "options": ["Six", "Eight", "Twelve"], "correct": 2 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The observability stack consisting of metrics, logs, and traces should be deployed before migrating any production workloads." },
+        { "text": "Implementing immutable infrastructure eliminates configuration drift and simplifies disaster recovery." }
+      ]
+    }
+  },
+  {
+    "day_number": 5,
+    "difficulty": 3,
+    "title": "Technical Leadership",
+    "description": "Communication skills for leading technical teams and making strategic decisions.",
+    "content": {
+      "spelling": [
+        { "word": "mentorship", "definition": "Guidance provided by an experienced person to a less experienced colleague.", "phonetic": "/ˈmen.tɔːr.ʃɪp/", "syllables": "men·tor·ship" },
+        { "word": "delegation", "definition": "The assignment of authority or tasks to others.", "phonetic": "/ˌdel.ɪˈɡeɪ.ʃən/", "syllables": "del·e·ga·tion" },
+        { "word": "sustainability", "definition": "The ability to maintain a process or pace over the long term.", "phonetic": "/səˌsteɪ.nəˈbɪl.ɪ.ti/", "syllables": "sus·tain·a·bil·i·ty" },
+        { "word": "alignment", "definition": "Agreement or cooperation among people working toward shared goals.", "phonetic": "/əˈlaɪn.mənt/", "syllables": "a·lign·ment" },
+        { "word": "prioritization", "definition": "The action of deciding the relative importance of tasks.", "phonetic": "/praɪˌɒr.ɪ.taɪˈzeɪ.ʃən/", "syllables": "pri·or·i·ti·za·tion" }
+      ],
+      "dictation": [
+        { "text": "Effective delegation requires clearly communicating expectations and providing the necessary context for autonomous decision-making.", "hint": "Leadership skills" },
+        { "text": "We need to establish a sustainable on-call rotation that prevents burnout while maintaining adequate incident coverage.", "hint": "Team health" },
+        { "text": "The architecture review board should meet biweekly to ensure cross-team alignment on technical standards.", "hint": "Governance" }
+      ],
+      "listening": [
+        {
+          "title": "Handling Technical Disagreement",
+          "dialog": [
+            { "speaker": "Tech Lead", "text": "The team is split on whether to use GraphQL or REST for the new API. Both sides have valid arguments." },
+            { "speaker": "Director", "text": "What are the main trade-offs?" },
+            { "speaker": "Tech Lead", "text": "GraphQL gives us flexibility for the mobile team, but REST is simpler and our team has more experience with it." },
+            { "speaker": "Director", "text": "Let's time-box a prototype with GraphQL for one week. If the learning curve is manageable, we go with it. Otherwise, we stick with REST." },
+            { "speaker": "Tech Lead", "text": "That's fair. A data-driven decision will help everyone get on board." }
+          ],
+          "questions": [
+            { "question": "What is the team disagreement about?", "options": ["Frontend framework", "API technology choice", "Database selection"], "correct": 1 },
+            { "question": "What advantage does GraphQL offer?", "options": ["Better security", "Flexibility for mobile", "Faster performance"], "correct": 1 },
+            { "question": "How is the decision being made?", "options": ["Manager decides alone", "Time-boxed prototype", "Voting by team members"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "I'd like to propose a mentorship program pairing senior and junior engineers for quarterly knowledge transfer sessions." },
+        { "text": "Our prioritization framework should balance technical debt reduction with feature development to ensure long-term sustainability." }
+      ]
+    }
+  },
+  {
+    "day_number": 6,
+    "difficulty": 3,
+    "title": "Machine Learning Integration",
+    "description": "Vocabulary for discussing AI/ML features, data pipelines, and model deployment.",
+    "content": {
+      "spelling": [
+        { "word": "classification", "definition": "The process of categorizing data into predefined groups.", "phonetic": "/ˌklæs.ɪ.fɪˈkeɪ.ʃən/", "syllables": "clas·si·fi·ca·tion" },
+        { "word": "preprocessing", "definition": "Steps to clean and transform raw data before analysis.", "phonetic": "/ˌpriːˈprɒs.es.ɪŋ/", "syllables": "pre·pro·cess·ing" },
+        { "word": "inference", "definition": "The process of using a trained model to make predictions.", "phonetic": "/ˈɪn.fər.əns/", "syllables": "in·fer·ence" },
+        { "word": "overfitting", "definition": "When a model learns training data too well and performs poorly on new data.", "phonetic": "/ˌoʊ.vərˈfɪt.ɪŋ/", "syllables": "o·ver·fit·ting" },
+        { "word": "tokenization", "definition": "Breaking text into smaller meaningful units for processing.", "phonetic": "/ˌtoʊ.kə.naɪˈzeɪ.ʃən/", "syllables": "to·ken·i·za·tion" }
+      ],
+      "dictation": [
+        { "text": "The feature engineering pipeline transforms raw transaction data into normalized vectors suitable for the classification model.", "hint": "Data pipeline" },
+        { "text": "We need to implement A/B testing to compare the recommendation engine's precision and recall against the baseline.", "hint": "Model evaluation" },
+        { "text": "The inference latency must stay under fifty milliseconds to meet our service level objectives.", "hint": "Performance requirements" }
+      ],
+      "listening": [
+        {
+          "title": "Deploying a Recommendation Model",
+          "dialog": [
+            { "speaker": "ML Engineer", "text": "The new recommendation model improves click-through rate by eighteen percent in offline evaluation." },
+            { "speaker": "Product Manager", "text": "Impressive. What's the plan for production deployment?" },
+            { "speaker": "ML Engineer", "text": "We'll deploy it behind a feature flag and run an A/B test with ten percent of traffic for two weeks." },
+            { "speaker": "Product Manager", "text": "What happens if the model causes issues?" },
+            { "speaker": "ML Engineer", "text": "We have automatic rollback triggers if the error rate exceeds our threshold." }
+          ],
+          "questions": [
+            { "question": "How much does the new model improve click-through rate?", "options": ["Eight percent", "Eighteen percent", "Twenty-eight percent"], "correct": 1 },
+            { "question": "What percentage of traffic will see the new model initially?", "options": ["Five percent", "Ten percent", "Fifty percent"], "correct": 1 },
+            { "question": "What safety mechanism is in place?", "options": ["Manual monitoring", "Automatic rollback triggers", "Scheduled downtime"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The preprocessing pipeline must handle missing values and normalize categorical features before model inference." },
+        { "text": "We should implement model versioning and maintain a registry to track experiments and their performance metrics." }
+      ]
+    }
+  },
+  {
+    "day_number": 7,
+    "difficulty": 3,
+    "title": "Stakeholder Presentations",
+    "description": "Communicating complex technical concepts to non-technical stakeholders.",
+    "content": {
+      "spelling": [
+        { "word": "visualization", "definition": "The representation of data in a visual or graphic format.", "phonetic": "/ˌvɪʒ.u.ə.laɪˈzeɪ.ʃən/", "syllables": "vis·u·al·i·za·tion" },
+        { "word": "quantifiable", "definition": "Able to be expressed or measured as a quantity.", "phonetic": "/ˈkwɒn.tɪ.faɪ.ə.bəl/", "syllables": "quan·ti·fi·a·ble" },
+        { "word": "proposition", "definition": "A statement or assertion that expresses a judgment.", "phonetic": "/ˌprɒp.əˈzɪʃ.ən/", "syllables": "prop·o·si·tion" },
+        { "word": "methodology", "definition": "A system of methods used in a particular area.", "phonetic": "/ˌmeθ.əˈdɒl.ə.dʒi/", "syllables": "meth·od·ol·o·gy" },
+        { "word": "differentiation", "definition": "The process of distinguishing between different things.", "phonetic": "/ˌdɪf.ə.ren.ʃiˈeɪ.ʃən/", "syllables": "dif·fer·en·ti·a·tion" }
+      ],
+      "dictation": [
+        { "text": "The data visualization dashboard provides stakeholders with real-time insights into customer acquisition and retention metrics.", "hint": "Executive reporting" },
+        { "text": "Our methodology for estimating return on investment accounts for both direct cost savings and productivity improvements.", "hint": "Business case" },
+        { "text": "The competitive differentiation of our platform lies in its ability to process unstructured data at enterprise scale.", "hint": "Value proposition" }
+      ],
+      "listening": [
+        {
+          "title": "Presenting Technical Roadmap to Executives",
+          "dialog": [
+            { "speaker": "VP Eng", "text": "I need to present our technical roadmap to the board next week. What are our key initiatives?" },
+            { "speaker": "Architect", "text": "Three main items: migrating to the cloud which saves us roughly forty percent on infrastructure costs, implementing the recommendation engine which should drive a fifteen percent increase in engagement, and the security compliance program for SOC 2 certification." },
+            { "speaker": "VP Eng", "text": "Can you quantify the timeline and resources for each?" },
+            { "speaker": "Architect", "text": "Cloud migration is six months with three engineers, recommendations is four months with two ML engineers, and SOC 2 is ongoing with one dedicated security engineer." }
+          ],
+          "questions": [
+            { "question": "How much will cloud migration save on infrastructure costs?", "options": ["Twenty percent", "Forty percent", "Sixty percent"], "correct": 1 },
+            { "question": "How many key initiatives are there?", "options": ["Two", "Three", "Four"], "correct": 1 },
+            { "question": "How many engineers are needed for the recommendation engine?", "options": ["One", "Two", "Three"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The quantifiable benefits of this initiative include a thirty percent reduction in customer support tickets and improved user satisfaction scores." },
+        { "text": "Our competitive differentiation is strengthened by the proprietary data pipeline that enables real-time personalization at scale." }
+      ]
+    }
+  },
+  {
+    "day_number": 8,
+    "difficulty": 3,
+    "title": "API Design Patterns",
+    "description": "Best practices for designing robust, versioned, and well-documented APIs.",
+    "content": {
+      "spelling": [
+        { "word": "pagination", "definition": "Dividing content into discrete pages for efficient retrieval.", "phonetic": "/ˌpædʒ.ɪˈneɪ.ʃən/", "syllables": "pag·i·na·tion" },
+        { "word": "deprecation", "definition": "Marking a feature as outdated and scheduled for removal.", "phonetic": "/ˌdep.rəˈkeɪ.ʃən/", "syllables": "dep·re·ca·tion" },
+        { "word": "serialization", "definition": "Converting data structures into a format suitable for transmission.", "phonetic": "/ˌsɪr.i.ə.laɪˈzeɪ.ʃən/", "syllables": "se·ri·al·i·za·tion" },
+        { "word": "middleware", "definition": "Software that acts as a bridge between an application and other systems.", "phonetic": "/ˈmɪd.əl.weər/", "syllables": "mid·dle·ware" },
+        { "word": "versioning", "definition": "The management of changes to APIs through version identifiers.", "phonetic": "/ˈvɜːr.ʒən.ɪŋ/", "syllables": "ver·sion·ing" }
+      ],
+      "dictation": [
+        { "text": "The API should implement cursor-based pagination for collections that may contain millions of records.", "hint": "Scalable APIs" },
+        { "text": "When deprecating an endpoint, we must provide a migration guide and maintain backward compatibility for at least two major versions.", "hint": "API lifecycle" },
+        { "text": "Request validation middleware should enforce schema constraints before the handler processes any business logic.", "hint": "API design" }
+      ],
+      "listening": [
+        {
+          "title": "Designing an API Versioning Strategy",
+          "dialog": [
+            { "speaker": "API Lead", "text": "We need a versioning strategy for our public API. Currently, breaking changes affect all clients simultaneously." },
+            { "speaker": "Senior Dev", "text": "I suggest URL-based versioning with a sunset policy. Version one stays active for twelve months after version two launches." },
+            { "speaker": "API Lead", "text": "What about the webhook payloads? Those are harder to version." },
+            { "speaker": "Senior Dev", "text": "For webhooks, we can use content negotiation headers and let clients specify which schema version they accept." }
+          ],
+          "questions": [
+            { "question": "What is the current problem?", "options": ["APIs are too slow", "Breaking changes affect all clients", "Documentation is missing"], "correct": 1 },
+            { "question": "How long will old versions remain active?", "options": ["Six months", "Twelve months", "Twenty-four months"], "correct": 1 },
+            { "question": "How will webhook versioning work?", "options": ["URL parameters", "Content negotiation headers", "Separate endpoints"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The serialization layer should transform internal domain objects into the appropriate API response schema based on the requested version." },
+        { "text": "Implementing rate limiting as middleware allows us to enforce usage quotas consistently across all API endpoints." }
+      ]
+    }
+  },
+  {
+    "day_number": 9,
+    "difficulty": 3,
+    "title": "Distributed Systems",
+    "description": "Concepts of distributed computing, consensus, and fault tolerance.",
+    "content": {
+      "spelling": [
+        { "word": "consensus", "definition": "Agreement among distributed nodes on a single data value.", "phonetic": "/kənˈsen.səs/", "syllables": "con·sen·sus" },
+        { "word": "replication", "definition": "Copying data across multiple nodes for redundancy.", "phonetic": "/ˌrep.lɪˈkeɪ.ʃən/", "syllables": "rep·li·ca·tion" },
+        { "word": "linearizability", "definition": "A strong consistency guarantee where operations appear atomic and ordered.", "phonetic": "/ˌlɪn.i.ər.aɪˈzeɪ.bɪl.ɪ.ti/", "syllables": "lin·e·ar·iz·a·bil·i·ty" },
+        { "word": "quorum", "definition": "The minimum number of nodes that must agree for an operation to succeed.", "phonetic": "/ˈkwɔːr.əm/", "syllables": "quo·rum" },
+        { "word": "partitioning", "definition": "A network split that prevents communication between groups of nodes.", "phonetic": "/pɑːrˈtɪʃ.ən.ɪŋ/", "syllables": "par·ti·tion·ing" }
+      ],
+      "dictation": [
+        { "text": "The CAP theorem states that a distributed system cannot simultaneously guarantee consistency, availability, and partition tolerance.", "hint": "Fundamental theorem" },
+        { "text": "Our write-ahead log ensures durability by persisting operations to disk before acknowledging them to the client.", "hint": "Durability" },
+        { "text": "The leader election algorithm uses heartbeat timeouts to detect failures and trigger re-election within the cluster.", "hint": "Fault detection" }
+      ],
+      "listening": [
+        {
+          "title": "Handling a Split-Brain Scenario",
+          "dialog": [
+            { "speaker": "SRE", "text": "We're seeing a split-brain situation in our database cluster. Nodes in US East and US West can't communicate." },
+            { "speaker": "Architect", "text": "Which partition has the quorum? We need to ensure only one partition accepts writes." },
+            { "speaker": "SRE", "text": "US East has three of five nodes, so it has quorum. US West should automatically switch to read-only mode." },
+            { "speaker": "Architect", "text": "Good. Once connectivity is restored, we need to reconcile any conflicting reads and verify data consistency." }
+          ],
+          "questions": [
+            { "question": "What type of failure is occurring?", "options": ["Hardware failure", "Split-brain scenario", "Data corruption"], "correct": 1 },
+            { "question": "How many nodes form the quorum?", "options": ["Two of five", "Three of five", "Four of five"], "correct": 1 },
+            { "question": "What should US West do during the partition?", "options": ["Continue writing", "Switch to read-only", "Shut down completely"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "Implementing conflict-free replicated data types allows our system to merge concurrent updates without coordination between nodes." },
+        { "text": "The consensus protocol requires a quorum of at least three out of five replicas to acknowledge a write before it's considered committed." }
+      ]
+    }
+  },
+  {
+    "day_number": 10,
+    "difficulty": 3,
+    "title": "Technical Debt Management",
+    "description": "Strategies for identifying, communicating, and reducing technical debt.",
+    "content": {
+      "spelling": [
+        { "word": "refactoring", "definition": "Restructuring existing code without changing its external behavior.", "phonetic": "/riːˈfæk.tər.ɪŋ/", "syllables": "re·fac·tor·ing" },
+        { "word": "amortization", "definition": "Spreading the cost of paying down debt over a period of time.", "phonetic": "/ˌæm.ɔːr.taɪˈzeɪ.ʃən/", "syllables": "a·mor·ti·za·tion" },
+        { "word": "encapsulation", "definition": "Bundling data and methods that operate on it within a single unit.", "phonetic": "/ɪnˌkæp.sjʊˈleɪ.ʃən/", "syllables": "en·cap·su·la·tion" },
+        { "word": "maintainability", "definition": "The ease with which software can be modified and updated.", "phonetic": "/meɪnˌteɪ.nəˈbɪl.ɪ.ti/", "syllables": "main·tain·a·bil·i·ty" },
+        { "word": "abstraction", "definition": "Hiding complex implementation details behind a simpler interface.", "phonetic": "/æbˈstræk.ʃən/", "syllables": "ab·strac·tion" }
+      ],
+      "dictation": [
+        { "text": "We should allocate approximately twenty percent of each sprint to technical debt reduction to maintain long-term velocity.", "hint": "Sprint allocation" },
+        { "text": "The lack of proper abstraction layers has made the codebase increasingly difficult to test and modify independently.", "hint": "Architecture issues" },
+        { "text": "Creating an engineering quality dashboard that tracks code coverage, cyclomatic complexity, and dependency freshness helps quantify technical debt.", "hint": "Measurement" }
+      ],
+      "listening": [
+        {
+          "title": "Making the Business Case for Refactoring",
+          "dialog": [
+            { "speaker": "Tech Lead", "text": "We're spending forty percent of our development time on workarounds due to the legacy payment module. I'd like to propose a refactoring initiative." },
+            { "speaker": "Product Director", "text": "How long would the refactoring take, and what would we gain?" },
+            { "speaker": "Tech Lead", "text": "Six weeks of focused work. After that, feature development in the payments area would be three times faster, and we'd reduce payment-related bugs by an estimated seventy percent." },
+            { "speaker": "Product Director", "text": "That's compelling. Can we do it incrementally alongside feature work?" },
+            { "speaker": "Tech Lead", "text": "Yes. We'll use the strangler pattern to replace modules one at a time while keeping the system stable." }
+          ],
+          "questions": [
+            { "question": "How much time is spent on workarounds?", "options": ["Twenty percent", "Thirty percent", "Forty percent"], "correct": 2 },
+            { "question": "What is the expected bug reduction?", "options": ["Fifty percent", "Sixty percent", "Seventy percent"], "correct": 2 },
+            { "question": "How will the refactoring be done?", "options": ["Complete rewrite", "Incrementally using strangler pattern", "Outsourced to contractors"], "correct": 1 }
+          ]
+        }
+      ],
+      "speaking": [
+        { "text": "The amortization strategy for our technical debt involves dedicating every fourth sprint entirely to refactoring and maintainability improvements." },
+        { "text": "Proper encapsulation of the business logic layer would allow us to swap the underlying data access implementation without affecting the rest of the application." }
       ]
     }
   }

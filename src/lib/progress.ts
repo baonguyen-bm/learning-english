@@ -30,12 +30,17 @@ export interface UserProgress {
   missions: Mission;
 }
 
-export async function getMissions(): Promise<Mission[]> {
-  const { data, error } = await supabase
+export async function getMissions(difficulty?: number): Promise<Mission[]> {
+  let query = supabase
     .from("missions")
     .select("*")
     .order("day_number", { ascending: true });
 
+  if (difficulty !== undefined) {
+    query = query.eq("difficulty", difficulty);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }
@@ -53,12 +58,22 @@ export async function getMissionById(
   return data;
 }
 
-export async function ensureProgressInitialized(userId: string) {
-  const { data: missions } = await supabase
+export async function ensureProgressInitialized(
+  userId: string,
+  difficulty?: number
+) {
+  const effectiveDifficulty = difficulty ?? await getUserDifficulty(userId);
+
+  let missionQuery = supabase
     .from("missions")
     .select("id, day_number")
     .order("day_number", { ascending: true });
 
+  if (effectiveDifficulty !== undefined) {
+    missionQuery = missionQuery.eq("difficulty", effectiveDifficulty);
+  }
+
+  const { data: missions } = await missionQuery;
   if (!missions || missions.length === 0) return;
 
   const { data: existing } = await supabase
@@ -82,7 +97,8 @@ export async function ensureProgressInitialized(userId: string) {
 }
 
 export async function getUserProgress(
-  userId: string
+  userId: string,
+  difficulty?: number
 ): Promise<UserProgress[]> {
   const { data, error } = await supabase
     .from("user_progress")
@@ -91,6 +107,13 @@ export async function getUserProgress(
     .order("missions(day_number)", { ascending: true });
 
   if (error) throw error;
+
+  if (difficulty !== undefined) {
+    return (data || []).filter(
+      (p) => p.missions && p.missions.difficulty === difficulty
+    );
+  }
+
   return data;
 }
 
@@ -131,6 +154,88 @@ export async function completeMission(
 
     if (unlockError) throw unlockError;
   }
+}
+
+export async function getUserDifficulty(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("difficulty_preference")
+    .eq("id", userId)
+    .single();
+
+  if (error || !data) return 2;
+  return data.difficulty_preference ?? 2;
+}
+
+export async function setUserDifficulty(
+  userId: string,
+  difficulty: number
+): Promise<void> {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ difficulty_preference: difficulty })
+    .eq("id", userId);
+
+  if (error) throw error;
+}
+
+export async function switchDifficulty(
+  userId: string,
+  newDifficulty: number
+): Promise<void> {
+  await setUserDifficulty(userId, newDifficulty);
+
+  const { error: deleteError } = await supabase
+    .from("user_progress")
+    .delete()
+    .eq("user_id", userId);
+
+  if (deleteError) throw deleteError;
+
+  await ensureProgressInitialized(userId, newDifficulty);
+}
+
+export async function getRollingAverageScore(
+  userId: string,
+  lastN: number = 3
+): Promise<number | null> {
+  const { data, error } = await supabase
+    .from("user_progress")
+    .select("score")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .not("completed_at", "is", null)
+    .order("completed_at", { ascending: false })
+    .limit(lastN);
+
+  if (error || !data || data.length < lastN) return null;
+
+  return Math.round(data.reduce((sum, p) => sum + p.score, 0) / data.length);
+}
+
+export interface DifficultySuggestion {
+  type: "suggest_harder" | "suggest_easier";
+  current: number;
+  suggested: number;
+}
+
+export async function getDifficultySuggestion(
+  userId: string
+): Promise<DifficultySuggestion | null> {
+  const [difficulty, avg] = await Promise.all([
+    getUserDifficulty(userId),
+    getRollingAverageScore(userId),
+  ]);
+
+  if (avg === null) return null;
+
+  if (avg >= 85 && difficulty < 3) {
+    return { type: "suggest_harder", current: difficulty, suggested: difficulty + 1 };
+  }
+  if (avg <= 50 && difficulty > 1) {
+    return { type: "suggest_easier", current: difficulty, suggested: difficulty - 1 };
+  }
+  return null;
 }
 
 export async function calculateStreak(userId: string): Promise<number> {

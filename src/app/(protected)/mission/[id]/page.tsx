@@ -9,10 +9,13 @@ import {
   completeMission,
   type Mission,
 } from "@/lib/progress";
-import type { Exercise } from "@/types/exercises";
+import type { Exercise, SpellingItem } from "@/types/exercises";
 import { SpellingBee } from "@/components/modules/SpellingBee";
 import { Dictation } from "@/components/modules/Dictation";
 import { Speaking } from "@/components/modules/Speaking";
+import { ListeningComprehension } from "@/components/modules/ListeningComprehension";
+import { saveExerciseResult } from "@/lib/exerciseResults";
+import { upsertVocabulary } from "@/lib/vocabulary";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -63,7 +66,7 @@ export default function MissionPage() {
     load();
   }, [missionId, router]);
 
-  const handleComplete = useCallback(
+  const advanceToNext = useCallback(
     async (score: number) => {
       const updated = [...scores, score];
       setScores(updated);
@@ -266,20 +269,50 @@ export default function MissionPage() {
                 definition={current.data.definition}
                 phonetic={current.data.phonetic}
                 syllables={current.data.syllables}
-                onComplete={handleComplete}
+                onComplete={(score) => {
+                  if (user) {
+                    const item = current.data as SpellingItem;
+                    saveExerciseResult(user.id, missionId, "spelling", item.word, score).catch(console.error);
+                    upsertVocabulary(user.id, item.word, item.definition, item.phonetic, item.syllables, score).catch(console.error);
+                  }
+                  advanceToNext(score);
+                }}
               />
             )}
             {current.type === "dictation" && (
               <Dictation
                 sentence={current.data.text}
                 hint={current.data.hint}
-                onComplete={handleComplete}
+                onComplete={(score) => {
+                  if (user) {
+                    saveExerciseResult(user.id, missionId, "dictation", current.data.text, score).catch(console.error);
+                  }
+                  advanceToNext(score);
+                }}
+              />
+            )}
+            {current.type === "listening" && (
+              <ListeningComprehension
+                item={current.data}
+                onComplete={(score, questionResults) => {
+                  if (user) {
+                    for (const qr of questionResults) {
+                      saveExerciseResult(user.id, missionId, "listening", qr.key, qr.score).catch(console.error);
+                    }
+                  }
+                  advanceToNext(score);
+                }}
               />
             )}
             {current.type === "speaking" && (
               <Speaking
                 targetSentence={current.data.text}
-                onComplete={handleComplete}
+                onComplete={(score) => {
+                  if (user) {
+                    saveExerciseResult(user.id, missionId, "speaking", current.data.text, score).catch(console.error);
+                  }
+                  advanceToNext(score);
+                }}
               />
             )}
           </div>
