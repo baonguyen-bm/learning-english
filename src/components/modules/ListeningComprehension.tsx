@@ -25,6 +25,9 @@ interface ListeningComprehensionProps {
 }
 
 type Phase = "listen" | "questions" | "done";
+type TTSBackend = "browser" | "api" | null;
+
+const VOICE_KEYS = ["default", "male", "female", "male2", "female2"];
 
 export function ListeningComprehension({
   item,
@@ -37,55 +40,71 @@ export function ListeningComprehension({
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [ttsBackend, setTTSBackend] = useState<TTSBackend>(null);
   const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    function loadVoices() {
-      const voices = speechSynthesis
-        .getVoices()
-        .filter((v) => v.lang.startsWith("en"));
-      if (voices.length > 0) voicesRef.current = voices;
-    }
+    if (typeof window === "undefined") return;
 
-    loadVoices();
-    speechSynthesis.addEventListener("voiceschanged", loadVoices);
-    return () =>
-      speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+    if ("speechSynthesis" in window) {
+      const synth = window.speechSynthesis;
+      const loadVoices = () => {
+        const voices = synth.getVoices().filter((v) => v.lang.startsWith("en"));
+        if (voices.length > 0) {
+          voicesRef.current = voices;
+          setTTSBackend("browser");
+        }
+      };
+      loadVoices();
+      synth.addEventListener("voiceschanged", loadVoices);
+
+      const timeout = setTimeout(() => {
+        setTTSBackend((prev) => prev ?? "api");
+      }, 2000);
+
+      return () => {
+        synth.removeEventListener("voiceschanged", loadVoices);
+        clearTimeout(timeout);
+      };
+    }
+    setTTSBackend("api");
   }, []);
 
-  const getVoiceForSpeaker = useCallback(
-    (speakerIndex: number): SpeechSynthesisVoice | undefined => {
-      const voices = voicesRef.current;
-      if (voices.length === 0) return undefined;
-      return voices[speakerIndex % voices.length];
-    },
-    []
-  );
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) speechSynthesis.cancel();
+      abortRef.current?.abort();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+    };
+  }, []);
 
-  const playDialog = useCallback(
-    (rate: number = 0.9) => {
-      if (isPlaying) return;
+  const playDialogBrowser = useCallback(
+    (rate: number) => {
       speechSynthesis.cancel();
       setIsPlaying(true);
 
       const speakers = [...new Set(item.dialog.map((l) => l.speaker))];
-
+      const voices = voicesRef.current;
       let i = 0;
+
       function speakNext() {
         if (i >= item.dialog.length) {
           setIsPlaying(false);
           setHasPlayed(true);
           return;
         }
-
         const line = item.dialog[i];
         const speakerIdx = speakers.indexOf(line.speaker);
         const utterance = new SpeechSynthesisUtterance(line.text);
         utterance.lang = "en-US";
         utterance.rate = rate;
-
-        const voice = getVoiceForSpeaker(speakerIdx);
-        if (voice) utterance.voice = voice;
+        if (voices.length > 0)
+          utterance.voice = voices[speakerIdx % voices.length];
 
         utterance.onend = () => {
           i++;
@@ -95,19 +114,97 @@ export function ListeningComprehension({
           i++;
           setTimeout(speakNext, 500);
         };
-
         speechSynthesis.speak(utterance);
       }
-
       speakNext();
     },
-    [isPlaying, item.dialog, getVoiceForSpeaker]
+    [item.dialog]
   );
 
-  useEffect(() => {
-    return () => {
-      speechSynthesis.cancel();
-    };
+  const playDialogAPI = useCallback(
+    async (rate: number) => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      setIsPlaying(true);
+
+      const speakers = [...new Set(item.dialog.map((l) => l.speaker))];
+
+      try {
+        for (let i = 0; i < item.dialog.length; i++) {
+          if (controller.signal.aborted) break;
+
+          const line = item.dialog[i];
+          const speakerIdx = speakers.indexOf(line.speaker);
+          const voice = VOICE_KEYS[speakerIdx % VOICE_KEYS.length];
+
+          const res = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: line.text, rate, voice }),
+            signal: controller.signal,
+          });
+
+          if (!res.ok) throw new Error("TTS failed");
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+
+          await new Promise<void>((resolve, reject) => {
+            const audio = new Audio(url);
+            audioRef.current = audio;
+            audio.onended = () => {
+              URL.revokeObjectURL(url);
+              resolve();
+            };
+            audio.onerror = () => {
+              URL.revokeObjectURL(url);
+              reject(new Error("playback failed"));
+            };
+            controller.signal.addEventListener("abort", () => {
+              audio.pause();
+              URL.revokeObjectURL(url);
+              reject(new Error("aborted"));
+            });
+            audio.play().catch(reject);
+          });
+
+          if (i < item.dialog.length - 1) {
+            await new Promise((r) => setTimeout(r, 500));
+          }
+        }
+
+        setIsPlaying(false);
+        setHasPlayed(true);
+      } catch (e) {
+        if ((e as Error).message !== "aborted") {
+          setIsPlaying(false);
+          setHasPlayed(true);
+        }
+      }
+    },
+    [item.dialog]
+  );
+
+  const playDialog = useCallback(
+    (rate: number = 0.9) => {
+      if (isPlaying) return;
+      if (ttsBackend === "browser") {
+        playDialogBrowser(rate);
+      } else {
+        playDialogAPI(rate);
+      }
+    },
+    [isPlaying, ttsBackend, playDialogBrowser, playDialogAPI]
+  );
+
+  const stopPlayback = useCallback(() => {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    abortRef.current?.abort();
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(false);
   }, []);
 
   const handleSelectAnswer = (optionIdx: number) => {
@@ -216,7 +313,7 @@ export function ListeningComprehension({
           {hasPlayed && (
             <Button
               onClick={() => {
-                speechSynthesis.cancel();
+                stopPlayback();
                 setPhase("questions");
               }}
               className="w-full animate-slide-up"

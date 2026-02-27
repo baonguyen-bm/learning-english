@@ -7,7 +7,7 @@ import { ScoreDisplay } from "@/components/ui/ScoreDisplay";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import { Mic, Square, ArrowRight, RotateCcw, AlertTriangle, SkipForward } from "lucide-react";
+import { Mic, Square, ArrowRight, RotateCcw, AlertTriangle, SkipForward, Settings } from "lucide-react";
 
 interface SpeakingProps {
   targetSentence: string;
@@ -30,6 +30,9 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
   if (!supported) {
     return (
       <Card className="space-y-4 animate-scale-in">
+        <p className="font-display text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
+          &ldquo;{targetSentence}&rdquo;
+        </p>
         <div className="flex items-start gap-3 p-3 rounded-lg bg-warning-light">
           <AlertTriangle size={20} className="shrink-0 mt-0.5 text-warning" />
           <div>
@@ -37,8 +40,12 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
               Speech recognition unavailable
             </p>
             <p className="text-sm text-ink-faded mt-1">
-              Your browser doesn&apos;t support speech recognition. Use Chrome
-              or Edge for the speaking module.
+              Your browser doesn&apos;t support speech recognition natively. You
+              can configure a Google Cloud API key in{" "}
+              <a href="/settings" className="text-primary hover:underline inline-flex items-center gap-0.5">
+                Settings <Settings size={12} />
+              </a>{" "}
+              to enable it.
             </p>
           </div>
         </div>

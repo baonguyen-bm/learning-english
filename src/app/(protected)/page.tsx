@@ -28,6 +28,7 @@ import {
   Sparkles,
   TrendingDown,
   X,
+  Settings,
 } from "lucide-react";
 
 const DIFFICULTY_LABELS: Record<number, string> = {
@@ -154,6 +155,13 @@ export default function Dashboard() {
             <span className="text-sm text-ink-ghost tabular-nums">
               {totalPoints} pts
             </span>
+            <Link
+              href="/settings"
+              className="p-2 rounded-lg text-ink-ghost hover:text-ink hover:bg-page transition-colors"
+              title="Settings"
+            >
+              <Settings size={16} />
+            </Link>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut size={16} />
             </Button>
