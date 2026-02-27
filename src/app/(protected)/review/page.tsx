@@ -76,7 +76,7 @@ export default function ReviewPage() {
             >
               <ArrowLeft size={20} />
             </button>
-            <h1 className="font-display text-xl text-ink">Review</h1>
+            <h1 className="font-display font-semibold text-xl text-ink">Review</h1>
           </div>
         </header>
         <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
@@ -84,7 +84,7 @@ export default function ReviewPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-success/10 text-success mx-auto">
               <Inbox size={36} />
             </div>
-            <h2 className="font-display text-2xl text-ink">
+            <h2 className="font-display font-semibold text-2xl text-ink">
               Nothing to review!
             </h2>
             <p className="text-ink-faded">
@@ -141,7 +141,7 @@ export default function ReviewPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/10 text-accent">
                 <PartyPopper size={36} />
               </div>
-              <h1 className="font-display text-3xl text-ink">
+              <h1 className="font-display font-semibold text-3xl text-ink">
                 Review Complete!
               </h1>
               <p className="text-ink-faded">

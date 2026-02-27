@@ -58,7 +58,7 @@
   --color-error: var(--error);
   --color-error-light: var(--error-light);
 
-  --font-display: var(--font-instrument-serif);
+  --font-display: var(--font-lora);
   --font-body: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
 

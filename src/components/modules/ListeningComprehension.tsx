@@ -249,7 +249,7 @@ export function ListeningComprehension({
         <p className="text-xs font-medium text-ink-faded uppercase tracking-wider">
           Listening Comprehension
         </p>
-        <h2 className="font-display text-xl text-ink">{item.title}</h2>
+        <h2 className="font-display font-semibold text-xl text-ink">{item.title}</h2>
       </div>
 
       {phase === "listen" && (
@@ -349,7 +349,7 @@ export function ListeningComprehension({
             </div>
           </div>
 
-          <p className="font-display text-lg text-ink">
+          <p className="font-display font-semibold text-lg text-ink">
             {item.questions[currentQ].question}
           </p>
 

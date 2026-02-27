@@ -203,7 +203,7 @@ export default function MissionPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/10 text-accent">
                 <Trophy size={36} />
               </div>
-              <h1 className="font-display text-3xl text-ink">
+              <h1 className="font-display font-semibold text-3xl text-ink">
                 Mission Complete!
               </h1>
               <p className="text-ink-faded">

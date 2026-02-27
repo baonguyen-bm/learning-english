@@ -30,7 +30,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
   if (!supported) {
     return (
       <Card className="space-y-4 animate-scale-in">
-        <p className="font-display text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
+        <p className="font-display font-semibold text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
           &ldquo;{targetSentence}&rdquo;
         </p>
         <div className="flex items-start gap-3 p-3 rounded-lg bg-warning-light">
@@ -78,7 +78,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
 
   return (
     <Card className="space-y-5 animate-scale-in">
-      <p className="font-display text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
+      <p className="font-display font-semibold text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
         &ldquo;{targetSentence}&rdquo;
       </p>
 

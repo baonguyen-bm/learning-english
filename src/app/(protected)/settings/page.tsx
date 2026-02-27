@@ -79,13 +79,13 @@ export default function SettingsPage() {
           >
             <ArrowLeft size={20} className="text-ink" />
           </button>
-          <h1 className="font-display text-lg text-ink">Settings</h1>
+          <h1 className="font-display font-semibold text-lg text-ink">Settings</h1>
         </div>
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         <Card className="space-y-4">
-          <h2 className="font-display text-lg text-ink">
+          <h2 className="font-display font-semibold text-lg text-ink">
             Speech API Status
           </h2>
           <p className="text-sm text-ink-faded">
@@ -139,7 +139,7 @@ export default function SettingsPage() {
         <Card className="space-y-4">
           <div className="flex items-center gap-2">
             <Key size={20} className="text-primary" />
-            <h2 className="font-display text-lg text-ink">
+            <h2 className="font-display font-semibold text-lg text-ink">
               Google Cloud Speech-to-Text
             </h2>
           </div>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="font-display text-lg text-ink">How it works</h2>
+          <h2 className="font-display font-semibold text-lg text-ink">How it works</h2>
           <div className="text-sm text-ink-faded space-y-2">
             <p>
               <strong className="text-ink">TTS (Hear words & dialogs):</strong>{" "}

@@ -111,7 +111,7 @@ export default function VocabularyPage() {
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="font-display text-xl text-ink">My Vocabulary</h1>
+            <h1 className="font-display font-semibold text-xl text-ink">My Vocabulary</h1>
             <p className="text-xs text-ink-faded">
               {stats.total} words · {stats.needsPractice} to practice ·{" "}
               {stats.mastered} mastered

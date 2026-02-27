@@ -135,7 +135,7 @@ export default function Dashboard() {
       <header className="border-b border-rule bg-surface/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <div>
-            <h1 className="font-display text-xl text-ink">
+            <h1 className="font-display font-semibold text-xl text-ink">
               English Daily Practice
             </h1>
             <p className="text-sm text-ink-faded">
@@ -180,7 +180,7 @@ export default function Dashboard() {
               <p className="text-xs font-medium text-primary uppercase tracking-wider mb-2">
                 Today&apos;s Mission
               </p>
-              <h2 className="font-display text-2xl md:text-3xl text-ink mb-1">
+              <h2 className="font-display font-semibold text-2xl md:text-3xl text-ink mb-1">
                 Day {todaysMission.missions.day_number}:{" "}
                 {todaysMission.missions.title}
               </h2>
@@ -199,7 +199,7 @@ export default function Dashboard() {
         {!todaysMission && progress.length > 0 && (
           <section className="animate-slide-up">
             <Card className="text-center py-8">
-              <p className="font-display text-2xl text-ink mb-2">
+              <p className="font-display font-semibold text-2xl text-ink mb-2">
                 All missions complete!
               </p>
               <p className="text-ink-faded">

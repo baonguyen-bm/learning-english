@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Instrument_Serif,
+  Lora,
   Plus_Jakarta_Sans,
   JetBrains_Mono,
 } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 
-const instrumentSerif = Instrument_Serif({
-  weight: "400",
+const lora = Lora({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-instrument-serif",
+  variable: "--font-lora",
   display: "swap",
 });
 
@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${instrumentSerif.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${lora.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

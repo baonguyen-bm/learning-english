@@ -45,7 +45,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
             <BookOpen size={32} />
           </div>
-          <h1 className="font-display text-3xl text-ink">
+          <h1 className="font-display font-semibold text-3xl text-ink">
             English Daily Practice
           </h1>
           <p className="text-ink-faded">
