@@ -1,7 +1,4 @@
 import { supabase } from "./supabaseClient";
-import missionsJson from "../../data/missions.json";
-
-const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 export interface Mission {
   id: string;
@@ -25,39 +22,7 @@ export interface UserProgress {
   missions: Mission;
 }
 
-// ---------------------------------------------------------------------------
-// Dev-mode helpers (localStorage)
-// ---------------------------------------------------------------------------
-
-const STORAGE_KEY = "edp_dev_progress";
-
-function getDevMissions(): Mission[] {
-  return missionsJson.map((m) => ({
-    id: `dev-mission-${m.day_number}`,
-    day_number: m.day_number,
-    title: m.title,
-    description: m.description ?? "",
-    content: m.content as Mission["content"],
-  }));
-}
-
-function readDevProgress(): UserProgress[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
-}
-
-function writeDevProgress(progress: UserProgress[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-}
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
 export async function getMissions(): Promise<Mission[]> {
-  if (DEV_MODE) return getDevMissions();
-
   const { data, error } = await supabase
     .from("missions")
     .select("*")
@@ -70,10 +35,6 @@ export async function getMissions(): Promise<Mission[]> {
 export async function getMissionById(
   missionId: string
 ): Promise<Mission | null> {
-  if (DEV_MODE) {
-    return getDevMissions().find((m) => m.id === missionId) ?? null;
-  }
-
   const { data, error } = await supabase
     .from("missions")
     .select("*")
@@ -85,24 +46,6 @@ export async function getMissionById(
 }
 
 export async function ensureProgressInitialized(userId: string) {
-  if (DEV_MODE) {
-    const existing = readDevProgress();
-    if (existing.length > 0) return;
-
-    const missions = getDevMissions();
-    const progress: UserProgress[] = missions.map((m) => ({
-      id: `dev-progress-${m.day_number}`,
-      user_id: userId,
-      mission_id: m.id,
-      status: m.day_number === 1 ? "open" : "locked",
-      score: 0,
-      completed_at: null,
-      missions: m,
-    }));
-    writeDevProgress(progress);
-    return;
-  }
-
   const { data: missions } = await supabase
     .from("missions")
     .select("id, day_number")
@@ -133,15 +76,6 @@ export async function ensureProgressInitialized(userId: string) {
 export async function getUserProgress(
   userId: string
 ): Promise<UserProgress[]> {
-  if (DEV_MODE) {
-    let progress = readDevProgress();
-    if (progress.length === 0) {
-      await ensureProgressInitialized(userId);
-      progress = readDevProgress();
-    }
-    return progress;
-  }
-
   const { data, error } = await supabase
     .from("user_progress")
     .select("*, missions(*)")
@@ -158,26 +92,6 @@ export async function completeMission(
   score: number,
   nextMissionId?: string
 ) {
-  if (DEV_MODE) {
-    const progress = readDevProgress();
-    const idx = progress.findIndex((p) => p.mission_id === missionId);
-    if (idx !== -1) {
-      progress[idx].status = "completed";
-      progress[idx].score = Math.max(progress[idx].score, score);
-      progress[idx].completed_at = new Date().toISOString();
-    }
-    if (nextMissionId) {
-      const nextIdx = progress.findIndex(
-        (p) => p.mission_id === nextMissionId
-      );
-      if (nextIdx !== -1 && progress[nextIdx].status === "locked") {
-        progress[nextIdx].status = "open";
-      }
-    }
-    writeDevProgress(progress);
-    return;
-  }
-
   const { data: existing } = await supabase
     .from("user_progress")
     .select("score")
@@ -212,41 +126,24 @@ export async function completeMission(
 }
 
 export async function calculateStreak(userId: string): Promise<number> {
-  let dates: number[];
+  const { data, error } = await supabase
+    .from("user_progress")
+    .select("completed_at")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .not("completed_at", "is", null)
+    .order("completed_at", { ascending: false });
 
-  if (DEV_MODE) {
-    const progress = readDevProgress();
-    const completed = progress.filter((p) => p.completed_at);
-    if (completed.length === 0) return 0;
+  if (error || !data || data.length === 0) return 0;
 
-    dates = completed
-      .map((p) => {
-        const d = new Date(p.completed_at!);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      })
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort((a, b) => b - a);
-  } else {
-    const { data, error } = await supabase
-      .from("user_progress")
-      .select("completed_at")
-      .eq("user_id", userId)
-      .eq("status", "completed")
-      .not("completed_at", "is", null)
-      .order("completed_at", { ascending: false });
-
-    if (error || !data || data.length === 0) return 0;
-
-    dates = data
-      .map((p) => {
-        const d = new Date(p.completed_at!);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      })
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort((a, b) => b - a);
-  }
+  const dates = data
+    .map((p) => {
+      const d = new Date(p.completed_at!);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    })
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort((a, b) => b - a);
 
   let streak = 0;
   const today = new Date();
