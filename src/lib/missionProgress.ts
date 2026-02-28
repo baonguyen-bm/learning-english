@@ -1,13 +1,21 @@
 /**
- * Persists in-mission progress (currentStep, scores) so users can resume
+ * Persists in-mission progress per section so users can resume
  * after navigating away. Cleared when mission is completed.
  */
 
 const PREFIX = "learning-english:mission-progress:";
 
-export interface MissionProgress {
+export type SectionType = "spelling" | "dictation" | "listening" | "speaking";
+
+export interface SectionProgress {
   currentStep: number;
   scores: number[];
+  completed: boolean;
+}
+
+export interface MissionProgress {
+  sections: Partial<Record<SectionType, SectionProgress>>;
+  activeSection: SectionType | null;
 }
 
 export function getMissionProgress(
@@ -19,13 +27,12 @@ export function getMissionProgress(
     const key = `${PREFIX}${userId}:${missionId}`;
     const stored = localStorage.getItem(key);
     if (!stored) return null;
-    const parsed = JSON.parse(stored) as MissionProgress;
-    if (
-      typeof parsed?.currentStep === "number" &&
-      Array.isArray(parsed?.scores)
-    ) {
-      return parsed;
+    const parsed = JSON.parse(stored);
+    if (parsed?.sections && typeof parsed.sections === "object") {
+      return parsed as MissionProgress;
     }
+    // Old format detected — discard
+    localStorage.removeItem(key);
   } catch {
     // ignore
   }
