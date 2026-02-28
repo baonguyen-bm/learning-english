@@ -4,14 +4,23 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import {
   ArrowLeft,
+  Key,
+  Trash2,
   CheckCircle2,
   AlertTriangle,
   Volume2,
   Mic,
+  ExternalLink,
   MessageSquare,
 } from "lucide-react";
+import {
+  getAzureSpeechConfig,
+  setAzureSpeechConfig,
+  removeAzureSpeechConfig,
+} from "@/lib/azureSpeechConfig";
 import {
   getDialogVoices,
   setDialogVoices,
@@ -21,6 +30,21 @@ import {
 const MAX_SPEAKER_SLOTS = 5;
 const VOICE_PREVIEW_PHRASE =
   "Hello, this is a sample of my voice for the dialogue.";
+
+const AZURE_REGIONS = [
+  { value: "eastus", label: "East US" },
+  { value: "eastus2", label: "East US 2" },
+  { value: "westus", label: "West US" },
+  { value: "westus2", label: "West US 2" },
+  { value: "centralus", label: "Central US" },
+  { value: "southeastasia", label: "Southeast Asia" },
+  { value: "eastasia", label: "East Asia" },
+  { value: "westeurope", label: "West Europe" },
+  { value: "northeurope", label: "North Europe" },
+  { value: "uksouth", label: "UK South" },
+  { value: "japaneast", label: "Japan East" },
+  { value: "australiaeast", label: "Australia East" },
+];
 
 async function previewVoice(
   voiceKey: string,
@@ -63,6 +87,11 @@ export default function SettingsPage() {
   const [sttSupported, setSttSupported] = useState<boolean | null>(null);
   const [dialogVoices, setDialogVoicesState] = useState<string[]>([]);
 
+  const [azureKey, setAzureKey] = useState("");
+  const [azureRegion, setAzureRegion] = useState("southeastasia");
+  const [azureConfigured, setAzureConfigured] = useState(false);
+  const [azureSaveStatus, setAzureSaveStatus] = useState<"idle" | "saved" | "removed">("idle");
+
   useEffect(() => {
     setTtsSupported(
       typeof window !== "undefined" && "speechSynthesis" in window
@@ -75,7 +104,31 @@ export default function SettingsPage() {
         ("webkitSpeechRecognition" in window ||
           "SpeechRecognition" in window)
     );
+
+    const config = getAzureSpeechConfig();
+    if (config) {
+      setAzureKey(config.key);
+      setAzureRegion(config.region);
+      setAzureConfigured(true);
+    }
   }, []);
+
+  const handleAzureSave = () => {
+    if (!azureKey.trim()) return;
+    setAzureSpeechConfig({ key: azureKey.trim(), region: azureRegion });
+    setAzureConfigured(true);
+    setAzureSaveStatus("saved");
+    setTimeout(() => setAzureSaveStatus("idle"), 3000);
+  };
+
+  const handleAzureRemove = () => {
+    removeAzureSpeechConfig();
+    setAzureKey("");
+    setAzureRegion("southeastasia");
+    setAzureConfigured(false);
+    setAzureSaveStatus("removed");
+    setTimeout(() => setAzureSaveStatus("idle"), 3000);
+  };
 
   const handleDialogVoiceChange = (speakerIndex: number, voiceKey: string) => {
     const next = [...getDialogVoices()];
@@ -83,6 +136,11 @@ export default function SettingsPage() {
     next[speakerIndex] = voiceKey;
     setDialogVoices(next);
     setDialogVoicesState(getDialogVoices());
+  };
+
+  const maskKey = (key: string) => {
+    if (key.length <= 8) return "••••••••";
+    return key.slice(0, 4) + "••••••••" + key.slice(-4);
   };
 
   return (
@@ -105,7 +163,8 @@ export default function SettingsPage() {
             Speech API Status
           </h2>
           <p className="text-sm text-ink-faded">
-            Your browser&apos;s built-in speech capabilities.
+            Your browser&apos;s built-in speech capabilities. Configure Azure
+            Speech below for detailed pronunciation assessment.
           </p>
 
           <div className="space-y-3">
@@ -134,7 +193,11 @@ export default function SettingsPage() {
                   Speech-to-Text (STT)
                 </span>
               </div>
-              {sttSupported ? (
+              {azureConfigured ? (
+                <span className="text-xs font-medium text-success flex items-center gap-1">
+                  <CheckCircle2 size={14} /> Azure Speech
+                </span>
+              ) : sttSupported ? (
                 <span className="text-xs font-medium text-success flex items-center gap-1">
                   <CheckCircle2 size={14} /> Browser
                 </span>
@@ -145,6 +208,89 @@ export default function SettingsPage() {
               )}
             </div>
           </div>
+        </Card>
+
+        <Card className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Key size={20} className="text-primary" />
+            <h2 className="font-display font-semibold text-lg text-ink">
+              Azure Speech
+            </h2>
+          </div>
+
+          <div className="text-sm text-ink-faded space-y-2">
+            <p>
+              Configure Azure Speech for detailed pronunciation assessment with
+              phoneme-level feedback and prosody analysis. Without Azure, the app
+              uses browser speech recognition with estimated scoring.
+            </p>
+            <a
+              href="https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-primary hover:underline"
+            >
+              Create an Azure Speech resource
+              <ExternalLink size={14} />
+            </a>
+          </div>
+
+          {azureConfigured && (
+            <div className="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-success/20">
+              <div>
+                <p className="text-sm font-medium text-success">Azure Speech configured</p>
+                <p className="text-xs text-ink-faded font-mono mt-0.5">
+                  {maskKey(azureKey)} · {azureRegion}
+                </p>
+              </div>
+              <button
+                onClick={handleAzureRemove}
+                className="p-2 rounded-lg text-error hover:bg-error/10 transition-colors"
+                title="Remove Azure config"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <Input
+              type="password"
+              value={azureKey}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setAzureKey(e.target.value)
+              }
+              placeholder="Azure Speech subscription key..."
+              className="font-mono text-sm"
+            />
+            <div className="flex gap-2">
+              <select
+                value={azureRegion}
+                onChange={(e) => setAzureRegion(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-lg bg-surface border border-rule text-sm text-ink focus:border-primary focus:outline-none"
+              >
+                {AZURE_REGIONS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+              <Button onClick={handleAzureSave} disabled={!azureKey.trim()}>
+                Save
+              </Button>
+            </div>
+          </div>
+
+          {azureSaveStatus === "saved" && (
+            <p className="text-sm text-success flex items-center gap-1 animate-fade-in">
+              <CheckCircle2 size={14} /> Azure Speech config saved
+            </p>
+          )}
+          {azureSaveStatus === "removed" && (
+            <p className="text-sm text-ink-faded flex items-center gap-1 animate-fade-in">
+              <Trash2 size={14} /> Azure Speech config removed
+            </p>
+          )}
         </Card>
 
         <Card className="space-y-4">
@@ -246,9 +392,10 @@ export default function SettingsPage() {
               <strong className="text-ink">
                 STT (Speaking exercises):
               </strong>{" "}
-              The app uses your browser&apos;s built-in speech recognition. For
-              detailed pronunciation assessment with phoneme-level feedback,
-              configure Azure Speech in the settings above.
+              The app uses your browser&apos;s built-in speech recognition by default.
+              For detailed pronunciation assessment with phoneme-level feedback,
+              prosody analysis, and Vietnamese pronunciation tips, configure Azure
+              Speech above. Your key is stored locally and never sent to our server.
             </p>
           </div>
         </Card>
