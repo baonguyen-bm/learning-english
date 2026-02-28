@@ -16,6 +16,11 @@ import { Speaking } from "@/components/modules/Speaking";
 import { ListeningComprehension } from "@/components/modules/ListeningComprehension";
 import { saveExerciseResult } from "@/lib/exerciseResults";
 import { upsertVocabulary } from "@/lib/vocabulary";
+import {
+  getMissionProgress,
+  setMissionProgress,
+  clearMissionProgress,
+} from "@/lib/missionProgress";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -34,6 +39,7 @@ export default function MissionPage() {
   const [showSummary, setShowSummary] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -43,7 +49,7 @@ export default function MissionPage() {
         return;
       }
       setMission(data);
-      setExercises([
+      const exercisesList = [
         ...data.content.spelling.map((s) => ({
           type: "spelling" as const,
           data: s,
@@ -60,45 +66,76 @@ export default function MissionPage() {
           type: "speaking" as const,
           data: s,
         })),
-      ]);
+      ];
+      setExercises(exercisesList);
+
+      if (user) {
+        const saved = getMissionProgress(user.id, missionId);
+        if (
+          saved &&
+          saved.currentStep < exercisesList.length &&
+          saved.scores.length < exercisesList.length &&
+          saved.currentStep === saved.scores.length
+        ) {
+          setCurrentStep(saved.currentStep);
+          setScores(saved.scores);
+        }
+      }
       setLoading(false);
     }
     load();
-  }, [missionId, router]);
+  }, [missionId, router, user]);
+
+  const saveMissionCompletion = useCallback(
+    async (finalScore: number) => {
+      if (!user) return;
+      setSaving(true);
+      setSaveError(null);
+      try {
+        const all = await getUserProgress(user.id);
+        const idx = all.findIndex((p) => p.mission_id === missionId);
+        const nextId =
+          idx >= 0 && idx < all.length - 1
+            ? all[idx + 1].mission_id
+            : undefined;
+        await completeMission(user.id, missionId, finalScore, nextId);
+      } catch (e) {
+        console.error("Failed to save progress:", e);
+        setSaveError(
+          "Could not save progress. Your completion may not be recorded. Please check your connection and try again."
+        );
+      } finally {
+        setSaving(false);
+      }
+    },
+    [user, missionId]
+  );
 
   const advanceToNext = useCallback(
     async (score: number) => {
       const updated = [...scores, score];
+      const nextStep = currentStep + 1;
       setScores(updated);
 
-      if (currentStep + 1 < exercises.length) {
-        setCurrentStep((s) => s + 1);
+      if (nextStep < exercises.length) {
+        setCurrentStep(nextStep);
+        if (user) {
+          setMissionProgress(user.id, missionId, {
+            currentStep: nextStep,
+            scores: updated,
+          });
+        }
       } else {
         setShowSummary(true);
+        if (user) clearMissionProgress(user.id, missionId);
 
         const avg = Math.round(
           updated.reduce((a, b) => a + b, 0) / updated.length
         );
-
-        if (user) {
-          setSaving(true);
-          try {
-            const all = await getUserProgress(user.id);
-            const idx = all.findIndex((p) => p.mission_id === missionId);
-            const nextId =
-              idx >= 0 && idx < all.length - 1
-                ? all[idx + 1].mission_id
-                : undefined;
-            await completeMission(user.id, missionId, avg, nextId);
-          } catch (e) {
-            console.error("Failed to save progress:", e);
-          } finally {
-            setSaving(false);
-          }
-        }
+        await saveMissionCompletion(avg);
       }
     },
-    [scores, currentStep, exercises.length, user, missionId]
+    [scores, currentStep, exercises.length, user, missionId, saveMissionCompletion]
   );
 
   if (loading || !mission) {
@@ -251,6 +288,19 @@ export default function MissionPage() {
               <p className="text-sm text-ink-faded text-center animate-fade-in">
                 Saving progress...
               </p>
+            )}
+
+            {saveError && (
+              <div className="p-4 rounded-lg bg-error/10 border border-error/30 space-y-2 animate-fade-in">
+                <p className="text-sm text-error">{saveError}</p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => saveMissionCompletion(overallScore)}
+                >
+                  Retry saving
+                </Button>
+              </div>
             )}
 
             <Button

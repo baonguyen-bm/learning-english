@@ -6,7 +6,7 @@
 -- 1. New tables
 
 create table public.exercise_results (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null,
   mission_id uuid references public.missions,
   exercise_type text check (exercise_type in ('spelling', 'dictation', 'speaking', 'listening')),
@@ -19,7 +19,7 @@ create index idx_exercise_results_user on public.exercise_results (user_id, atte
 create index idx_exercise_results_user_type on public.exercise_results (user_id, exercise_type);
 
 create table public.vocabulary (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null,
   word text not null,
   definition text,

@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useSTT } from "@/hooks/useSTT";
+import { useTTS } from "@/hooks/useTTS";
 import { scoreSpeaking } from "@/lib/scoring";
 import { ScoreDisplay } from "@/components/ui/ScoreDisplay";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import { Mic, Square, ArrowRight, RotateCcw, AlertTriangle, SkipForward, Settings } from "lucide-react";
+import { Mic, Square, ArrowRight, RotateCcw, AlertTriangle, SkipForward, Settings, Volume2 } from "lucide-react";
 
 interface SpeakingProps {
   targetSentence: string;
@@ -24,8 +25,17 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
     error,
     resetTranscript,
   } = useSTT();
+  const { speak, cancel, isSpeaking } = useTTS();
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+
+  const handleListen = () => {
+    if (isSpeaking) {
+      cancel();
+    } else {
+      speak(targetSentence, 0.85);
+    }
+  };
 
   if (!supported) {
     return (
@@ -33,6 +43,16 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
         <p className="font-display font-semibold text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
           &ldquo;{targetSentence}&rdquo;
         </p>
+        <div className="flex justify-center">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleListen}
+          >
+            <Volume2 size={16} className={isSpeaking ? "animate-pulse" : ""} />
+            {isSpeaking ? "Playing..." : "Listen"}
+          </Button>
+        </div>
         <div className="flex items-start gap-3 p-3 rounded-lg bg-warning-light">
           <AlertTriangle size={20} className="shrink-0 mt-0.5 text-warning" />
           <div>
@@ -81,6 +101,18 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
       <p className="font-display font-semibold text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
         &ldquo;{targetSentence}&rdquo;
       </p>
+
+      <div className="flex justify-center">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleListen}
+          disabled={isListening}
+        >
+          <Volume2 size={16} className={isSpeaking ? "animate-pulse" : ""} />
+          {isSpeaking ? "Playing..." : "Listen first"}
+        </Button>
+      </div>
 
       <div className="flex flex-col items-center gap-3">
         <button

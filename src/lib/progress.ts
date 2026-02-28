@@ -64,16 +64,12 @@ export async function ensureProgressInitialized(
 ) {
   const effectiveDifficulty = difficulty ?? await getUserDifficulty(userId);
 
-  let missionQuery = supabase
+  const { data: missions } = await supabase
     .from("missions")
     .select("id, day_number")
-    .order("day_number", { ascending: true });
+    .order("day_number", { ascending: true })
+    .eq("difficulty", effectiveDifficulty);
 
-  if (effectiveDifficulty !== undefined) {
-    missionQuery = missionQuery.eq("difficulty", effectiveDifficulty);
-  }
-
-  const { data: missions } = await missionQuery;
   if (!missions || missions.length === 0) return;
 
   const { data: existing } = await supabase

@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+import { getDialogVoiceForSpeaker } from "@/lib/dialogVoices";
 
 export interface QuestionResult {
   key: string;
@@ -25,9 +26,6 @@ interface ListeningComprehensionProps {
 }
 
 type Phase = "listen" | "questions" | "done";
-type TTSBackend = "browser" | "api" | null;
-
-const VOICE_KEYS = ["default", "male", "female", "male2", "female2"];
 
 export function ListeningComprehension({
   item,
@@ -40,41 +38,11 @@ export function ListeningComprehension({
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [ttsBackend, setTTSBackend] = useState<TTSBackend>(null);
-  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    if ("speechSynthesis" in window) {
-      const synth = window.speechSynthesis;
-      const loadVoices = () => {
-        const voices = synth.getVoices().filter((v) => v.lang.startsWith("en"));
-        if (voices.length > 0) {
-          voicesRef.current = voices;
-          setTTSBackend("browser");
-        }
-      };
-      loadVoices();
-      synth.addEventListener("voiceschanged", loadVoices);
-
-      const timeout = setTimeout(() => {
-        setTTSBackend((prev) => prev ?? "api");
-      }, 2000);
-
-      return () => {
-        synth.removeEventListener("voiceschanged", loadVoices);
-        clearTimeout(timeout);
-      };
-    }
-    setTTSBackend("api");
-  }, []);
-
-  useEffect(() => {
     return () => {
-      if ("speechSynthesis" in window) speechSynthesis.cancel();
       abortRef.current?.abort();
       if (audioRef.current) {
         audioRef.current.pause();
@@ -82,44 +50,6 @@ export function ListeningComprehension({
       }
     };
   }, []);
-
-  const playDialogBrowser = useCallback(
-    (rate: number) => {
-      speechSynthesis.cancel();
-      setIsPlaying(true);
-
-      const speakers = [...new Set(item.dialog.map((l) => l.speaker))];
-      const voices = voicesRef.current;
-      let i = 0;
-
-      function speakNext() {
-        if (i >= item.dialog.length) {
-          setIsPlaying(false);
-          setHasPlayed(true);
-          return;
-        }
-        const line = item.dialog[i];
-        const speakerIdx = speakers.indexOf(line.speaker);
-        const utterance = new SpeechSynthesisUtterance(line.text);
-        utterance.lang = "en-US";
-        utterance.rate = rate;
-        if (voices.length > 0)
-          utterance.voice = voices[speakerIdx % voices.length];
-
-        utterance.onend = () => {
-          i++;
-          setTimeout(speakNext, 500);
-        };
-        utterance.onerror = () => {
-          i++;
-          setTimeout(speakNext, 500);
-        };
-        speechSynthesis.speak(utterance);
-      }
-      speakNext();
-    },
-    [item.dialog]
-  );
 
   const playDialogAPI = useCallback(
     async (rate: number) => {
@@ -136,7 +66,7 @@ export function ListeningComprehension({
 
           const line = item.dialog[i];
           const speakerIdx = speakers.indexOf(line.speaker);
-          const voice = VOICE_KEYS[speakerIdx % VOICE_KEYS.length];
+          const voice = getDialogVoiceForSpeaker(speakerIdx);
 
           const res = await fetch("/api/tts", {
             method: "POST",
@@ -189,17 +119,12 @@ export function ListeningComprehension({
   const playDialog = useCallback(
     (rate: number = 0.9) => {
       if (isPlaying) return;
-      if (ttsBackend === "browser") {
-        playDialogBrowser(rate);
-      } else {
-        playDialogAPI(rate);
-      }
+      playDialogAPI(rate);
     },
-    [isPlaying, ttsBackend, playDialogBrowser, playDialogAPI]
+    [isPlaying, playDialogAPI]
   );
 
   const stopPlayback = useCallback(() => {
-    if ("speechSynthesis" in window) speechSynthesis.cancel();
     abortRef.current?.abort();
     if (audioRef.current) {
       audioRef.current.pause();

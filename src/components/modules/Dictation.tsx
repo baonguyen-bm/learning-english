@@ -116,7 +116,12 @@ export function Dictation({ sentence, hint, onComplete }: DictationProps) {
             </p>
             <p className="font-mono text-ink leading-relaxed">{sentence}</p>
           </div>
-          {!gaveUp && <WordDiff results={diffWords(input, sentence)} />}
+          {!gaveUp && (
+            <WordDiff
+              results={diffWords(input, sentence)}
+              onWordClick={(word) => speak(word)}
+            />
+          )}
           <Button onClick={() => onComplete(score)}>
             Next <ArrowRight size={16} />
           </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -50,11 +50,14 @@ export default function Dashboard() {
   );
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [switching, setSwitching] = useState(false);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     if (!user) return;
 
     async function loadData() {
+      if (loadingRef.current) return;
+      loadingRef.current = true;
       setError(null);
       try {
         const userDiff = await getUserDifficulty(user!.id);
@@ -65,6 +68,7 @@ export default function Dashboard() {
           getUserProgress(user!.id, userDiff),
           calculateStreak(user!.id),
         ]);
+
         setProgress(progressData);
         setStreak(streakData);
       } catch (e) {
@@ -72,6 +76,7 @@ export default function Dashboard() {
         console.error(e);
       } finally {
         setLoading(false);
+        loadingRef.current = false;
       }
 
       try {
@@ -90,6 +95,14 @@ export default function Dashboard() {
     }
 
     loadData();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && user && !loadingRef.current)
+        loadData();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
   }, [user]);
 
   const todaysMission = progress.find((p) => p.status === "open");

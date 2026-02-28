@@ -1,5 +1,3 @@
-create extension if not exists "uuid-ossp";
-
 create table public.profiles (
   id uuid references auth.users not null primary key,
   email text,
@@ -9,7 +7,7 @@ create table public.profiles (
 );
 
 create table public.missions (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   day_number int not null unique,
   title text not null,
   description text,
@@ -18,7 +16,7 @@ create table public.missions (
 );
 
 create table public.user_progress (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null,
   mission_id uuid references public.missions not null,
   status text check (status in ('locked', 'open', 'completed')) default 'locked',
