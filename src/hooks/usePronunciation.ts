@@ -119,7 +119,7 @@ export function usePronunciation() {
               setStatus("error");
             }
 
-            recognizer.close();
+            try { recognizer.close(); } catch { /* already disposed */ }
             recognizerRef.current = null;
           },
           (err: string) => {
@@ -127,7 +127,7 @@ export function usePronunciation() {
               err || "Recognition failed. Check your Azure key and region."
             );
             setStatus("error");
-            recognizer.close();
+            try { recognizer.close(); } catch { /* already disposed */ }
             recognizerRef.current = null;
           }
         );
