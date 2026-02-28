@@ -14,6 +14,7 @@ import {
   type DifficultySuggestion,
 } from "@/lib/progress";
 import { getDueReviewCount } from "@/lib/srs";
+import { getWeakWordCount } from "@/lib/pronunciationWords";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -29,6 +30,7 @@ import {
   TrendingDown,
   X,
   Settings,
+  Mic,
 } from "lucide-react";
 
 const DIFFICULTY_LABELS: Record<number, string> = {
@@ -50,6 +52,7 @@ export default function Dashboard() {
   );
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [switching, setSwitching] = useState(false);
+  const [pronCount, setPronCount] = useState(0);
   const loadingRef = useRef(false);
 
   useEffect(() => {
@@ -80,12 +83,14 @@ export default function Dashboard() {
       }
 
       try {
-        const [reviewData, suggestionData] = await Promise.all([
+        const [reviewData, suggestionData, pronData] = await Promise.all([
           getDueReviewCount(user!.id),
           getDifficultySuggestion(user!.id),
+          getWeakWordCount(user!.id),
         ]);
         setReviewCount(reviewData);
         setSuggestion(suggestionData);
+        setPronCount(pronData);
 
         const dismissed = sessionStorage.getItem("suggestion_dismissed");
         if (dismissed === "true") setSuggestionDismissed(true);
@@ -302,7 +307,7 @@ export default function Dashboard() {
           </section>
         )}
 
-        <section className="grid grid-cols-2 gap-3 animate-slide-up">
+        <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 animate-slide-up">
           <Link href="/vocabulary">
             <Card hover className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -322,6 +327,19 @@ export default function Dashboard() {
               <div>
                 <p className="font-medium text-ink text-sm">Review</p>
                 <p className="text-xs text-ink-faded">Practice weak words</p>
+              </div>
+            </Card>
+          </Link>
+          <Link href="/pronunciation">
+            <Card hover className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
+                <Mic size={20} className="text-success" />
+              </div>
+              <div>
+                <p className="font-medium text-ink text-sm">Phát âm</p>
+                <p className="text-xs text-ink-faded">
+                  {pronCount > 0 ? `${pronCount} từ cần luyện` : "Luyện phát âm"}
+                </p>
               </div>
             </Card>
           </Link>
