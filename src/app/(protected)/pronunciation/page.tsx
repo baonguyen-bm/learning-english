@@ -213,9 +213,12 @@ export default function PronunciationPage() {
                 hover
                 className="animate-slide-up cursor-pointer"
               >
-                <button
-                  className="w-full flex items-center gap-3 text-left"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="w-full flex items-center gap-3 text-left cursor-pointer"
                   onClick={() => setDrillingWord(entry)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setDrillingWord(entry); }}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -253,7 +256,7 @@ export default function PronunciationPage() {
                     <Volume2 size={18} />
                   </button>
                   <ChevronRight size={16} className="text-ink-ghost" />
-                </button>
+                </div>
               </Card>
             ))}
           </div>
