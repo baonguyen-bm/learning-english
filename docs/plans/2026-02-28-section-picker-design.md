@@ -109,6 +109,14 @@ Replace `currentStep`, `scores`, `exercises` flat array with section-based model
 
 ```typescript
 // At the top of MissionPage component, replace state declarations:
+// Import types from missionProgress.ts (do NOT redefine them):
+import {
+  getMissionProgress,
+  setMissionProgress,
+  clearMissionProgress,
+  type SectionType,
+  type SectionProgress,
+} from "@/lib/missionProgress";
 
 // Old:
 // const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -116,13 +124,12 @@ Replace `currentStep`, `scores`, `exercises` flat array with section-based model
 // const [scores, setScores] = useState<number[]>([]);
 
 // New:
-type SectionType = "spelling" | "dictation" | "listening" | "speaking";
-
-interface SectionProgress {
-  currentStep: number;
-  scores: number[];
-  completed: boolean;
-}
+const DEFAULT_SECTION_PROGRESS: Record<SectionType, SectionProgress> = {
+  spelling: { currentStep: 0, scores: [], completed: false },
+  dictation: { currentStep: 0, scores: [], completed: false },
+  listening: { currentStep: 0, scores: [], completed: false },
+  speaking: { currentStep: 0, scores: [], completed: false },
+};
 
 const [sectionExercises, setSectionExercises] = useState<
   Record<SectionType, Exercise[]>
@@ -130,12 +137,7 @@ const [sectionExercises, setSectionExercises] = useState<
 
 const [sectionProgress, setSectionProgress] = useState<
   Record<SectionType, SectionProgress>
->({
-  spelling: { currentStep: 0, scores: [], completed: false },
-  dictation: { currentStep: 0, scores: [], completed: false },
-  listening: { currentStep: 0, scores: [], completed: false },
-  speaking: { currentStep: 0, scores: [], completed: false },
-});
+>({ ...DEFAULT_SECTION_PROGRESS });
 
 const [activeSection, setActiveSection] = useState<SectionType | null>(null);
 ```
@@ -172,11 +174,11 @@ useEffect(() => {
     };
     setSectionExercises(grouped);
 
-    // Restore saved progress
+    // Restore saved progress (use fresh defaults, not stale state ref)
     if (user) {
       const saved = getMissionProgress(user.id, missionId);
       if (saved) {
-        const restoredProgress = { ...sectionProgress };
+        const restoredProgress = { ...DEFAULT_SECTION_PROGRESS };
         for (const [key, sp] of Object.entries(saved.sections)) {
           if (sp && key in restoredProgress) {
             restoredProgress[key as SectionType] = sp;
@@ -427,14 +429,9 @@ const totalCompleted = getAvailableSections().reduce(
 );
 const barPercent = showSummary
   ? 100
-  : activeSection
+  : totalExercises > 0
     ? (totalCompleted / totalExercises) * 100
-    : (totalCompleted / totalExercises) * 100;
-
-// Header display:
-// - Picker: "Mission Title" + overall progress
-// - Active section: "Spelling 2/5" + overall progress  
-// - Summary: "Complete!" + 100%
+    : 0;
 ```
 
 Update the header JSX:
