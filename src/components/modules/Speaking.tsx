@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { WordHighlight } from "@/components/pronunciation/WordHighlight";
 import { PronunciationReport } from "@/components/pronunciation/PronunciationReport";
 import { cn } from "@/lib/utils";
+import type { WordPronunciationResult } from "@/types/pronunciation";
 import {
   Mic,
   Square,
@@ -21,7 +22,7 @@ import {
 
 interface SpeakingProps {
   targetSentence: string;
-  onComplete: (score: number) => void;
+  onComplete: (score: number, words?: WordPronunciationResult[]) => void;
 }
 
 export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
@@ -206,7 +207,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
 
           <PronunciationReport result={result} />
 
-          <Button onClick={() => onComplete(score)}>
+          <Button onClick={() => onComplete(score, result?.words)}>
             Tiếp <ArrowRight size={16} />
           </Button>
         </div>

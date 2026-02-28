@@ -16,6 +16,9 @@ import { Speaking } from "@/components/modules/Speaking";
 import { ListeningComprehension } from "@/components/modules/ListeningComprehension";
 import { saveExerciseResult } from "@/lib/exerciseResults";
 import { upsertVocabulary } from "@/lib/vocabulary";
+import { WordDrill } from "@/components/modules/WordDrill";
+import { upsertWeakWords } from "@/lib/pronunciationWords";
+import type { WordPronunciationResult } from "@/types/pronunciation";
 import {
   getMissionProgress,
   setMissionProgress,
@@ -78,6 +81,9 @@ export default function MissionPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [weakWords, setWeakWords] = useState<WordPronunciationResult[]>([]);
+  const [drillPhase, setDrillPhase] = useState<"none" | "prompt" | "drilling">("none");
+  const [drillIndex, setDrillIndex] = useState(0);
 
   const getAvailableSections = useCallback((): SectionType[] => {
     return (
@@ -184,23 +190,31 @@ export default function MissionPage() {
         );
 
         if (allDone) {
-          setShowSummary(true);
-          setActiveSection(null);
-          if (user) clearMissionProgress(user.id, missionId);
+          if (activeSection === "speaking" && weakWords.length > 0) {
+            setDrillPhase("prompt");
+          } else {
+            setShowSummary(true);
+            setActiveSection(null);
+            if (user) clearMissionProgress(user.id, missionId);
 
-          const allScores = availableSections.flatMap((s) =>
-            s === activeSection ? updatedScores : updatedProgress[s].scores
-          );
-          const avgScore = Math.round(
-            allScores.reduce((a, b) => a + b, 0) / allScores.length
-          );
-          await saveMissionCompletion(avgScore);
+            const allScores = availableSections.flatMap((s) =>
+              s === activeSection ? updatedScores : updatedProgress[s].scores
+            );
+            const avgScore = Math.round(
+              allScores.reduce((a, b) => a + b, 0) / allScores.length
+            );
+            await saveMissionCompletion(avgScore);
+          }
         } else {
-          setActiveSection(null);
+          if (activeSection === "speaking" && weakWords.length > 0) {
+            setDrillPhase("prompt");
+          } else {
+            setActiveSection(null);
+          }
           if (user) {
             setMissionProgress(user.id, missionId, {
               sections: updatedProgress,
-              activeSection: null,
+              activeSection: activeSection === "speaking" && weakWords.length > 0 ? activeSection : null,
             });
           }
         }
@@ -221,8 +235,33 @@ export default function MissionPage() {
       user,
       missionId,
       saveMissionCompletion,
+      weakWords,
     ]
   );
+
+  const finishDrillPhase = useCallback(() => {
+    setDrillPhase("none");
+    setWeakWords([]);
+    setDrillIndex(0);
+    const availableSections = getAvailableSections();
+    const allDone = availableSections.every(
+      (s) => sectionProgress[s].completed
+    );
+    if (allDone) {
+      setShowSummary(true);
+      setActiveSection(null);
+      if (user) clearMissionProgress(user.id, missionId);
+      const allScores = availableSections.flatMap(
+        (s) => sectionProgress[s].scores
+      );
+      const avgScore = Math.round(
+        allScores.reduce((a, b) => a + b, 0) / allScores.length
+      );
+      saveMissionCompletion(avgScore);
+    } else {
+      setActiveSection(null);
+    }
+  }, [getAvailableSections, sectionProgress, user, missionId, saveMissionCompletion]);
 
   if (loading || !mission) {
     return (
@@ -473,100 +512,197 @@ export default function MissionPage() {
             </div>
           </div>
         ) : (
-          (() => {
-            const exercises = sectionExercises[activeSection];
-            const progress = sectionProgress[activeSection];
-            const current = exercises[progress.currentStep];
-            if (!current) return null;
+          <>
+            {drillPhase === "none" && (() => {
+              const exercises = sectionExercises[activeSection];
+              const progress = sectionProgress[activeSection];
+              const current = exercises[progress.currentStep];
+              if (!current) return null;
 
-            return (
-              <div key={`${activeSection}-${progress.currentStep}`}>
-                {current.type === "spelling" && (
-                  <SpellingBee
-                    word={current.data.word}
-                    definition={current.data.definition}
-                    phonetic={current.data.phonetic}
-                    syllables={current.data.syllables}
-                    onComplete={(score) => {
-                      if (user) {
-                        const item = current.data as SpellingItem;
-                        saveExerciseResult(
-                          user.id,
-                          missionId,
-                          "spelling",
-                          item.word,
-                          score
-                        ).catch(console.error);
-                        upsertVocabulary(
-                          user.id,
-                          item.word,
-                          item.definition,
-                          item.phonetic,
-                          item.syllables,
-                          score
-                        ).catch(console.error);
-                      }
-                      advanceToNext(score);
-                    }}
-                  />
-                )}
-                {current.type === "dictation" && (
-                  <Dictation
-                    sentence={current.data.text}
-                    hint={current.data.hint}
-                    onComplete={(score) => {
-                      if (user) {
-                        saveExerciseResult(
-                          user.id,
-                          missionId,
-                          "dictation",
-                          current.data.text,
-                          score
-                        ).catch(console.error);
-                      }
-                      advanceToNext(score);
-                    }}
-                  />
-                )}
-                {current.type === "listening" && (
-                  <ListeningComprehension
-                    item={current.data}
-                    onComplete={(score, questionResults) => {
-                      if (user) {
-                        for (const qr of questionResults) {
+              return (
+                <div key={`${activeSection}-${progress.currentStep}`}>
+                  {current.type === "spelling" && (
+                    <SpellingBee
+                      word={current.data.word}
+                      definition={current.data.definition}
+                      phonetic={current.data.phonetic}
+                      syllables={current.data.syllables}
+                      onComplete={(score) => {
+                        if (user) {
+                          const item = current.data as SpellingItem;
                           saveExerciseResult(
                             user.id,
                             missionId,
-                            "listening",
-                            qr.key,
-                            qr.score
+                            "spelling",
+                            item.word,
+                            score
+                          ).catch(console.error);
+                          upsertVocabulary(
+                            user.id,
+                            item.word,
+                            item.definition,
+                            item.phonetic,
+                            item.syllables,
+                            score
                           ).catch(console.error);
                         }
-                      }
-                      advanceToNext(score);
-                    }}
-                  />
-                )}
-                {current.type === "speaking" && (
-                  <Speaking
-                    targetSentence={current.data.text}
-                    onComplete={(score) => {
+                        advanceToNext(score);
+                      }}
+                    />
+                  )}
+                  {current.type === "dictation" && (
+                    <Dictation
+                      sentence={current.data.text}
+                      hint={current.data.hint}
+                      onComplete={(score) => {
+                        if (user) {
+                          saveExerciseResult(
+                            user.id,
+                            missionId,
+                            "dictation",
+                            current.data.text,
+                            score
+                          ).catch(console.error);
+                        }
+                        advanceToNext(score);
+                      }}
+                    />
+                  )}
+                  {current.type === "listening" && (
+                    <ListeningComprehension
+                      item={current.data}
+                      onComplete={(score, questionResults) => {
+                        if (user) {
+                          for (const qr of questionResults) {
+                            saveExerciseResult(
+                              user.id,
+                              missionId,
+                              "listening",
+                              qr.key,
+                              qr.score
+                            ).catch(console.error);
+                          }
+                        }
+                        advanceToNext(score);
+                      }}
+                    />
+                  )}
+                  {current.type === "speaking" && (
+                    <Speaking
+                      targetSentence={current.data.text}
+                      onComplete={(score, words) => {
+                        if (user) {
+                          saveExerciseResult(
+                            user.id,
+                            missionId,
+                            "speaking",
+                            current.data.text,
+                            score
+                          ).catch(console.error);
+                        }
+                        if (words) {
+                          const weak = words.filter(
+                            (w) => w.accuracyScore < 75 && w.errorType !== "insertion"
+                          );
+                          if (weak.length > 0) {
+                            setWeakWords((prev) => {
+                              const existing = new Set(prev.map((p) => p.word.toLowerCase()));
+                              const newWords = weak.filter(
+                                (w) => !existing.has(w.word.toLowerCase())
+                              );
+                              return [...prev, ...newWords];
+                            });
+                          }
+                        }
+                        advanceToNext(score);
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })()}
+
+            {drillPhase === "prompt" && (
+              <div className="space-y-6 animate-scale-in">
+                <div className="text-center space-y-3">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-warning/10 text-warning">
+                    <Mic size={28} />
+                  </div>
+                  <h2 className="font-display font-semibold text-xl text-ink">
+                    {weakWords.length} từ cần luyện thêm
+                  </h2>
+                  <p className="text-sm text-ink-faded">
+                    Có {weakWords.length} từ phát âm chưa đạt 75 điểm. Bạn muốn luyện ngay không?
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {weakWords.slice(0, 10).map((w, i) => (
+                    <span
+                      key={i}
+                      className="px-2 py-1 rounded-md text-sm font-mono bg-error/10 text-error"
+                    >
+                      {w.word}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={() => { setDrillPhase("drilling"); setDrillIndex(0); }}>
+                    Luyện ngay
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
                       if (user) {
-                        saveExerciseResult(
+                        upsertWeakWords(
                           user.id,
-                          missionId,
-                          "speaking",
-                          current.data.text,
-                          score
+                          weakWords.map((w) => ({ word: w.word, score: w.accuracyScore, phonemes: w.phonemes })),
+                          missionId
                         ).catch(console.error);
                       }
-                      advanceToNext(score);
+                      finishDrillPhase();
                     }}
-                  />
-                )}
+                  >
+                    Bỏ qua
+                  </Button>
+                </div>
               </div>
-            );
-          })()
+            )}
+
+            {drillPhase === "drilling" && weakWords[drillIndex] && (
+              <div className="space-y-4">
+                <p className="text-sm text-ink-faded">
+                  Từ {drillIndex + 1}/{Math.min(weakWords.length, 10)}
+                </p>
+                <WordDrill
+                  key={`drill-${drillIndex}`}
+                  word={weakWords[drillIndex].word}
+                  previousPhonemes={weakWords[drillIndex].phonemes}
+                  onComplete={(score, phonemes) => {
+                    if (user) {
+                      upsertWeakWords(user.id, [{ word: weakWords[drillIndex].word, score, phonemes }], missionId).catch(console.error);
+                    }
+                    const nextIndex = drillIndex + 1;
+                    if (nextIndex >= Math.min(weakWords.length, 10)) {
+                      finishDrillPhase();
+                    } else {
+                      setDrillIndex(nextIndex);
+                    }
+                  }}
+                  onSkip={() => {
+                    if (user) {
+                      upsertWeakWords(user.id, [{ word: weakWords[drillIndex].word, score: weakWords[drillIndex].accuracyScore, phonemes: weakWords[drillIndex].phonemes }], missionId).catch(console.error);
+                    }
+                    const nextIndex = drillIndex + 1;
+                    if (nextIndex >= Math.min(weakWords.length, 10)) {
+                      finishDrillPhase();
+                    } else {
+                      setDrillIndex(nextIndex);
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>
