@@ -198,23 +198,3 @@ export function diffChars(input: string, target: string): CharDiffOp[] {
 
   return ops;
 }
-
-export function scoreSpeaking(transcript: string, target: string): number {
-  const spokenWords = normalize(transcript);
-  const targetWords = normalize(target);
-
-  if (targetWords.length === 0) return 0;
-
-  let matched = 0;
-  const used = new Set<number>();
-
-  for (const tw of targetWords) {
-    const idx = spokenWords.findIndex((w, i) => !used.has(i) && w === tw);
-    if (idx !== -1) {
-      matched++;
-      used.add(idx);
-    }
-  }
-
-  return Math.round((matched / targetWords.length) * 100);
-}

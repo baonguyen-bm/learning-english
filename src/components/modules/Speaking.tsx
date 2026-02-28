@@ -1,14 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSTT } from "@/hooks/useSTT";
+import { usePronunciation } from "@/hooks/usePronunciation";
 import { useTTS } from "@/hooks/useTTS";
-import { scoreSpeaking } from "@/lib/scoring";
-import { ScoreDisplay } from "@/components/ui/ScoreDisplay";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { WordHighlight } from "@/components/pronunciation/WordHighlight";
+import { PronunciationReport } from "@/components/pronunciation/PronunciationReport";
 import { cn } from "@/lib/utils";
-import { Mic, Square, ArrowRight, RotateCcw, AlertTriangle, SkipForward, Settings, Volume2 } from "lucide-react";
+import {
+  Mic,
+  Square,
+  ArrowRight,
+  RotateCcw,
+  AlertTriangle,
+  SkipForward,
+  Settings,
+  Volume2,
+} from "lucide-react";
 
 interface SpeakingProps {
   targetSentence: string;
@@ -16,25 +25,39 @@ interface SpeakingProps {
 }
 
 export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
-  const {
-    startListening,
-    stopListening,
-    isListening,
-    transcript,
-    supported,
-    error,
-    resetTranscript,
-  } = useSTT();
+  const { assess, stop, reset, status, result, error } = usePronunciation();
   const { speak, cancel, isSpeaking } = useTTS();
   const [submitted, setSubmitted] = useState(false);
-  const [score, setScore] = useState(0);
+
+  const isListening = status === "listening";
+  const isLoading = status === "loading";
+  const isProcessing = status === "processing";
+  const supported =
+    typeof window !== "undefined" &&
+    ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
 
   const handleListen = () => {
-    if (isSpeaking) {
-      cancel();
+    if (isSpeaking) cancel();
+    else speak(targetSentence, 0.85);
+  };
+
+  const handleToggle = () => {
+    if (isListening) {
+      stop();
     } else {
-      speak(targetSentence, 0.85);
+      assess(targetSentence);
     }
+  };
+
+  const handleSubmit = () => {
+    if (isListening) stop();
+    setSubmitted(true);
+  };
+
+  const handleRetry = () => {
+    reset();
+    setSubmitted(false);
+    assess(targetSentence);
   };
 
   if (!supported) {
@@ -44,12 +67,11 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
           &ldquo;{targetSentence}&rdquo;
         </p>
         <div className="flex justify-center">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleListen}
-          >
-            <Volume2 size={16} className={isSpeaking ? "animate-pulse" : ""} />
+          <Button variant="secondary" size="sm" onClick={handleListen}>
+            <Volume2
+              size={16}
+              className={isSpeaking ? "animate-pulse" : ""}
+            />
             {isSpeaking ? "Playing..." : "Listen"}
           </Button>
         </div>
@@ -60,12 +82,15 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
               Speech recognition unavailable
             </p>
             <p className="text-sm text-ink-faded mt-1">
-              Your browser doesn&apos;t support speech recognition natively. You
-              can configure a Google Cloud API key in{" "}
-              <a href="/settings" className="text-primary hover:underline inline-flex items-center gap-0.5">
+              Your browser doesn&apos;t support speech recognition. Configure
+              Azure Speech in{" "}
+              <a
+                href="/settings"
+                className="text-primary hover:underline inline-flex items-center gap-0.5"
+              >
                 Settings <Settings size={12} />
               </a>{" "}
-              to enable it.
+              to enable pronunciation assessment.
             </p>
           </div>
         </div>
@@ -76,25 +101,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
     );
   }
 
-  const handleToggle = () => {
-    if (isListening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  };
-
-  const handleSubmit = () => {
-    if (isListening) stopListening();
-    const result = scoreSpeaking(transcript, targetSentence);
-    setScore(result);
-    setSubmitted(true);
-  };
-
-  const handleRetry = () => {
-    resetTranscript();
-    startListening();
-  };
+  const score = result?.pronunciationScore ?? 0;
 
   return (
     <Card className="space-y-5 animate-scale-in">
@@ -109,7 +116,10 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
           onClick={handleListen}
           disabled={isListening}
         >
-          <Volume2 size={16} className={isSpeaking ? "animate-pulse" : ""} />
+          <Volume2
+            size={16}
+            className={isSpeaking ? "animate-pulse" : ""}
+          />
           {isSpeaking ? "Playing..." : "Listen first"}
         </Button>
       </div>
@@ -117,7 +127,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
       <div className="flex flex-col items-center gap-3">
         <button
           onClick={handleToggle}
-          disabled={submitted}
+          disabled={submitted || isProcessing || isLoading}
           className={cn(
             "w-20 h-20 rounded-full flex items-center justify-center text-white",
             "transition-all duration-150 ease-out",
@@ -130,7 +140,13 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
           {isListening ? <Square size={28} /> : <Mic size={28} />}
         </button>
         <p className="text-sm text-ink-faded">
-          {isListening ? "Listening… tap to stop" : "Tap to start recording"}
+          {isLoading
+            ? "Đang tải engine phát âm..."
+            : isListening
+              ? "Đang nghe… nhấn để dừng"
+              : isProcessing
+                ? "Đang phân tích..."
+                : "Nhấn để bắt đầu nói"}
         </p>
       </div>
 
@@ -140,7 +156,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
         </p>
       )}
 
-      {!transcript && !submitted && !isListening && (
+      {!result && !submitted && !isListening && !isProcessing && (
         <div className="flex justify-center">
           <Button variant="ghost" onClick={() => onComplete(0)}>
             <SkipForward size={16} />
@@ -149,39 +165,49 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
         </div>
       )}
 
-      {transcript && !submitted && (
+      {result && !submitted && (
         <div className="space-y-4 animate-slide-up">
-          <div className="p-4 rounded-lg bg-page border border-rule">
-            <p className="text-xs font-medium text-ink-faded uppercase tracking-wider mb-1">
-              You said:
-            </p>
-            <p className="font-body text-lg text-ink">
-              &ldquo;{transcript}&rdquo;
-            </p>
-          </div>
+          <WordHighlight
+            words={result.words}
+            targetSentence={targetSentence}
+          />
           <div className="flex flex-wrap gap-3">
-            <Button onClick={handleSubmit}>Submit</Button>
+            <Button onClick={handleSubmit}>Nộp bài</Button>
             <Button variant="secondary" onClick={handleRetry}>
               <RotateCcw size={16} />
-              Try Again
+              Thử lại
             </Button>
           </div>
         </div>
       )}
 
-      {submitted && (
+      {submitted && result && (
         <div className="space-y-4 animate-slide-up">
-          <ScoreDisplay score={score} />
-          <div className="p-4 rounded-lg bg-page border border-rule">
-            <p className="text-xs font-medium text-ink-faded uppercase tracking-wider mb-1">
-              You said:
-            </p>
-            <p className="font-body text-lg text-ink">
-              &ldquo;{transcript}&rdquo;
-            </p>
+          <div className="flex items-baseline gap-1 animate-score-pop">
+            <span
+              className={cn(
+                "font-display text-4xl tabular-nums",
+                score >= 80
+                  ? "text-success"
+                  : score >= 50
+                    ? "text-warning"
+                    : "text-error"
+              )}
+            >
+              {score}
+            </span>
+            <span className="text-ink-ghost text-lg">/ 100</span>
           </div>
+
+          <WordHighlight
+            words={result.words}
+            targetSentence={targetSentence}
+          />
+
+          <PronunciationReport result={result} />
+
           <Button onClick={() => onComplete(score)}>
-            Next <ArrowRight size={16} />
+            Tiếp <ArrowRight size={16} />
           </Button>
         </div>
       )}
