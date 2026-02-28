@@ -414,8 +414,8 @@ export function findVietnameseErrors(
     if (sh && !tips.includes(sh)) tips.push(sh);
   }
 
-  // Heuristic: z → s
-  if (target.includes("z") && spoken.replace(/z/g, "s") !== spoken) {
+  // Heuristic: z → s (R: S7 — fixed outer guard to check spoken has "s", not "z")
+  if (target.includes("z") && spoken.includes("s")) {
     const z = VIETNAMESE_PHONEME_ERRORS.find(
       (e) => e.errorPattern === "z_to_s"
     );
@@ -428,11 +428,20 @@ export function findVietnameseErrors(
     }
   }
 
+  // Heuristic: v → b (R: R3 — substring pattern matching for broader coverage)
+  if (target.startsWith("v") && spoken.startsWith("b")) {
+    const vb = VIETNAMESE_PHONEME_ERRORS.find(
+      (e) => e.errorPattern === "v_to_b_or_v"
+    );
+    if (vb && !tips.includes(vb)) tips.push(vb);
+  }
+
   return tips;
 }
 
 /**
  * Analyze transcript vs target using confidence scores and heuristics.
+ * Uses lcsAlignment from scoring.ts for accurate word matching (R: R2).
  * This is the zero-cost fallback when Azure is not configured.
  */
 export function analyzeWithHeuristics(
@@ -440,52 +449,53 @@ export function analyzeWithHeuristics(
   targetSentence: string,
   confidence: number | null
 ): WordAnalysis[] {
-  const spokenWords = transcript
-    .trim()
-    .toLowerCase()
-    .replace(/[^\w\s]/g, "")
-    .split(/\s+/)
-    .filter(Boolean);
-  const targetWords = targetSentence
-    .trim()
-    .toLowerCase()
-    .replace(/[^\w\s]/g, "")
-    .split(/\s+/)
-    .filter(Boolean);
+  // Import lcsAlignment and normalize from scoring.ts
+  // (actual import at top of file: import { lcsAlignment } from "./scoring";)
+  const normalize = (s: string): string[] =>
+    s.trim().toLowerCase().replace(/[^\w\s]/g, "").split(/\s+/).filter(Boolean);
 
-  return targetWords.map((target, i) => {
-    const spoken = spokenWords[i];
+  const spokenWords = normalize(transcript);
+  const targetWords = normalize(targetSentence);
 
-    if (!spoken) {
+  // Use LCS-based alignment (tolerates insertions, omissions, reordering)
+  // lcsAlignment returns Map<targetIndex, inputIndex>
+  const { lcsAlignment, levenshteinDistance } = require("./scoring");
+  const alignment: Map<number, number> = lcsAlignment(spokenWords, targetWords);
+
+  return targetWords.map((target, j) => {
+    if (!alignment.has(j)) {
+      // Word was omitted by the speaker
       return {
         word: target,
         status: "error" as const,
         score: 0,
-        tips: [
-          VIETNAMESE_PHONEME_ERRORS.find(
-            (e) => e.errorPattern === "final_consonant_drop"
-          )!,
-        ].filter(Boolean),
+        tips: VIETNAMESE_PHONEME_ERRORS.filter(
+          (e) => e.errorPattern === "final_consonant_drop"
+        ),
       };
     }
 
-    if (spoken === target) {
+    const spokenIdx = alignment.get(j)!;
+    const spoken = spokenWords[spokenIdx];
+    const dist = levenshteinDistance(spoken, target);
+
+    if (dist === 0) {
       const isSuspect = confidence !== null && confidence < 0.7;
       return {
         word: target,
         status: isSuspect ? ("suspect" as const) : ("correct" as const),
         score: isSuspect ? 70 : 100,
-        tips: isSuspect
-          ? findVietnameseErrors(spoken, target)
-          : [],
+        tips: isSuspect ? findVietnameseErrors(spoken, target) : [],
       };
     }
 
+    // Word was misrecognized — find Vietnamese error patterns
     const tips = findVietnameseErrors(spoken, target);
+    const score = dist === 1 ? 50 : dist === 2 ? 25 : 0;
     return {
       word: target,
       status: "error" as const,
-      score: 0,
+      score,
       tips,
     };
   });
@@ -574,25 +584,30 @@ npm install microsoft-cognitiveservices-speech-sdk
 // src/hooks/usePronunciation.ts
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { getAzureSpeechConfig } from "@/lib/azureSpeechConfig";
 import { analyzeWithHeuristics } from "@/lib/vietnameseHeuristics";
 import type { PronunciationResult, WordPronunciationResult } from "@/types/pronunciation";
 
-type AssessmentStatus = "idle" | "listening" | "processing" | "done" | "error";
+type AssessmentStatus = "idle" | "loading" | "listening" | "processing" | "done" | "error";
 
 export function usePronunciation() {
   const [status, setStatus] = useState<AssessmentStatus>("idle");
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [azureConfigured, setAzureConfigured] = useState(false);
   const recognizerRef = useRef<unknown>(null);
   const browserSttRef = useRef<SpeechRecognition | null>(null);
 
-  const hasAzure = useCallback(() => !!getAzureSpeechConfig(), []);
+  // Check Azure config on mount (R: C3 — reactive to mount, not stale useCallback)
+  useEffect(() => {
+    setAzureConfigured(!!getAzureSpeechConfig());
+  }, []);
 
   /**
    * Start pronunciation assessment.
    * Uses Azure if configured, otherwise falls back to browser STT + heuristics.
+   * (R: C2 — inner functions moved inside assess to avoid stale closures)
    */
   const assess = useCallback(async (referenceText: string) => {
     setError(null);
@@ -600,240 +615,237 @@ export function usePronunciation() {
 
     const azureConfig = getAzureSpeechConfig();
     if (azureConfig) {
-      await assessWithAzure(azureConfig, referenceText);
+      // --- Azure mode: recognizeOnceAsync (R: C1 — single-utterance, no manual stop needed) ---
+      try {
+        setStatus("loading"); // (R: R1 — show loading while SDK downloads)
+        const sdk = await import("microsoft-cognitiveservices-speech-sdk");
+
+        const speechConfig = sdk.SpeechConfig.fromSubscription(
+          azureConfig.key,
+          azureConfig.region
+        );
+        speechConfig.speechRecognitionLanguage = "en-US";
+
+        const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+
+        const pronConfig = new sdk.PronunciationAssessmentConfig(
+          referenceText,
+          sdk.PronunciationAssessmentGradingSystem.HundredMark,
+          sdk.PronunciationAssessmentGranularity.Phoneme,
+          true
+        );
+        pronConfig.enableProsodyAssessment = true;
+        pronConfig.applyTo(recognizer);
+
+        recognizerRef.current = recognizer;
+        setStatus("listening");
+
+        recognizer.recognizeOnceAsync(
+          (speechResult) => {
+            setStatus("processing");
+
+            if (speechResult.reason === sdk.ResultReason.RecognizedSpeech) {
+              const pronResult =
+                sdk.PronunciationAssessmentResult.fromResult(speechResult);
+
+              const detailJson = speechResult.properties?.getProperty(
+                sdk.PropertyId.SpeechServiceResponse_JsonResult
+              );
+
+              let words: WordPronunciationResult[] = [];
+              if (detailJson) {
+                try {
+                  const parsed = JSON.parse(detailJson);
+                  const nBest = parsed?.NBest?.[0];
+                  if (nBest?.Words) {
+                    words = nBest.Words.map(
+                      (w: {
+                        Word: string;
+                        PronunciationAssessment: {
+                          AccuracyScore: number;
+                          ErrorType: string;
+                        };
+                        Phonemes?: {
+                          Phoneme: string;
+                          PronunciationAssessment: { AccuracyScore: number };
+                        }[];
+                      }) => ({
+                        word: w.Word,
+                        accuracyScore:
+                          w.PronunciationAssessment?.AccuracyScore ?? 0,
+                        errorType: mapErrorType(
+                          w.PronunciationAssessment?.ErrorType
+                        ),
+                        phonemes: w.Phonemes?.map((p) => ({
+                          phoneme: p.Phoneme,
+                          accuracyScore:
+                            p.PronunciationAssessment?.AccuracyScore ?? 0,
+                        })),
+                      })
+                    );
+                  }
+                } catch {
+                  // fall through — words stays empty
+                }
+              }
+
+              setResult({
+                transcript: speechResult.text,
+                accuracyScore: pronResult.accuracyScore,
+                fluencyScore: pronResult.fluencyScore,
+                completenessScore: pronResult.completenessScore,
+                prosodyScore: pronResult.prosodyScore,
+                pronunciationScore: pronResult.pronunciationScore,
+                words,
+                source: "azure",
+              });
+              setStatus("done");
+            } else {
+              setError("Could not recognize speech. Please try again.");
+              setStatus("error");
+            }
+
+            recognizer.close();
+            recognizerRef.current = null;
+          },
+          (err: string) => {
+            setError(
+              err || "Recognition failed. Check your Azure key and region."
+            );
+            setStatus("error");
+            recognizer.close();
+            recognizerRef.current = null;
+          }
+        );
+      } catch (e) {
+        setError(
+          `Azure SDK error: ${e instanceof Error ? e.message : "Unknown error"}`
+        );
+        setStatus("error");
+      }
     } else {
-      assessWithBrowser(referenceText);
+      // --- Browser fallback mode ---
+      if (
+        typeof window === "undefined" ||
+        !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
+      ) {
+        setError(
+          "Speech recognition not available. Configure Azure Speech in Settings for pronunciation assessment."
+        );
+        setStatus("error");
+        return;
+      }
+
+      const SpeechRecognitionAPI =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognitionAPI();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      browserSttRef.current = recognition;
+      setStatus("listening");
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        setStatus("processing");
+        const sttResult = event.results[event.resultIndex][0];
+        const transcript = sttResult.transcript;
+        const confidence = sttResult.confidence ?? null;
+
+        // (R: R2 — uses lcsAlignment from scoring.ts for accurate word matching)
+        const wordAnalyses = analyzeWithHeuristics(
+          transcript,
+          referenceText,
+          confidence
+        );
+
+        const correctCount = wordAnalyses.filter(
+          (w) => w.status === "correct"
+        ).length;
+        const totalWords = wordAnalyses.length;
+        const accuracyScore =
+          totalWords > 0 ? Math.round((correctCount / totalWords) * 100) : 0;
+
+        setResult({
+          transcript,
+          accuracyScore,
+          fluencyScore: confidence !== null ? Math.round(confidence * 100) : 50,
+          completenessScore:
+            totalWords > 0
+              ? Math.round(
+                  (wordAnalyses.filter((w) => w.status !== "error" || w.score > 0)
+                    .length /
+                    totalWords) *
+                    100
+                )
+              : 0,
+          pronunciationScore: accuracyScore,
+          words: wordAnalyses.map((w) => ({
+            word: w.word,
+            accuracyScore: w.score,
+            errorType:
+              w.status === "correct" || w.status === "suspect"
+                ? ("none" as const)
+                : ("mispronunciation" as const),
+          })),
+          source: "heuristic",
+        });
+        setStatus("done");
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        const messages: Record<string, string> = {
+          "no-speech": "No speech detected. Please try again.",
+          "audio-capture": "No microphone found.",
+          "not-allowed": "Microphone access denied.",
+        };
+        setError(messages[event.error] || "Could not hear you. Try again.");
+        setStatus("error");
+        browserSttRef.current = null;
+      };
+
+      recognition.onend = () => {
+        browserSttRef.current = null;
+      };
+
+      recognition.start();
     }
   }, []);
 
-  async function assessWithAzure(
-    config: { key: string; region: string },
-    referenceText: string
-  ) {
-    try {
-      const sdk = await import("microsoft-cognitiveservices-speech-sdk");
-
-      const speechConfig = sdk.SpeechConfig.fromSubscription(
-        config.key,
-        config.region
-      );
-      speechConfig.speechRecognitionLanguage = "en-US";
-
-      const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-      const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-
-      const pronConfig = new sdk.PronunciationAssessmentConfig(
-        referenceText,
-        sdk.PronunciationAssessmentGradingSystem.HundredMark,
-        sdk.PronunciationAssessmentGranularity.Phoneme,
-        true // enable miscue
-      );
-      pronConfig.enableProsodyAssessment = true;
-      pronConfig.applyTo(recognizer);
-
-      recognizerRef.current = recognizer;
-      setStatus("listening");
-
-      recognizer.recognized = (_s: unknown, e: { result: { text: string; reason: number } }) => {
-        setStatus("processing");
-        const speechResult = e.result;
-
-        if (speechResult.reason === sdk.ResultReason.RecognizedSpeech) {
-          const pronResult =
-            sdk.PronunciationAssessmentResult.fromResult(speechResult);
-
-          const detailJson = speechResult.properties?.getProperty(
-            sdk.PropertyId.SpeechServiceResponse_JsonResult
-          );
-
-          let words: WordPronunciationResult[] = [];
-          if (detailJson) {
-            try {
-              const parsed = JSON.parse(detailJson);
-              const nBest = parsed?.NBest?.[0];
-              if (nBest?.Words) {
-                words = nBest.Words.map(
-                  (w: {
-                    Word: string;
-                    PronunciationAssessment: {
-                      AccuracyScore: number;
-                      ErrorType: string;
-                    };
-                    Phonemes?: {
-                      Phoneme: string;
-                      PronunciationAssessment: { AccuracyScore: number };
-                    }[];
-                  }) => ({
-                    word: w.Word,
-                    accuracyScore:
-                      w.PronunciationAssessment?.AccuracyScore ?? 0,
-                    errorType: mapErrorType(
-                      w.PronunciationAssessment?.ErrorType
-                    ),
-                    phonemes: w.Phonemes?.map((p) => ({
-                      phoneme: p.Phoneme,
-                      accuracyScore:
-                        p.PronunciationAssessment?.AccuracyScore ?? 0,
-                    })),
-                  })
-                );
-              }
-            } catch {
-              // fall through — words stays empty
-            }
-          }
-
-          setResult({
-            transcript: speechResult.text,
-            accuracyScore: pronResult.accuracyScore,
-            fluencyScore: pronResult.fluencyScore,
-            completenessScore: pronResult.completenessScore,
-            prosodyScore: pronResult.prosodyScore,
-            pronunciationScore: pronResult.pronunciationScore,
-            words,
-            source: "azure",
-          });
-          setStatus("done");
-        } else {
-          setError("Could not recognize speech. Please try again.");
-          setStatus("error");
-        }
-
-        recognizer.close();
+  // (R: R4 — cleanup on unmount)
+  useEffect(() => {
+    return () => {
+      if (recognizerRef.current) {
+        const r = recognizerRef.current as { close: () => void };
+        try { r.close(); } catch { /* ignore */ }
         recognizerRef.current = null;
-      };
-
-      recognizer.canceled = () => {
-        setError(
-          "Recognition canceled. Check your Azure key and region."
-        );
-        setStatus("error");
-        recognizer.close();
-        recognizerRef.current = null;
-      };
-
-      recognizer.startContinuousRecognitionAsync(
-        () => {},
-        (err: string) => {
-          setError(err || "Failed to start Azure recognition.");
-          setStatus("error");
-        }
-      );
-    } catch (e) {
-      setError(
-        `Azure SDK error: ${e instanceof Error ? e.message : "Unknown error"}`
-      );
-      setStatus("error");
-    }
-  }
-
-  function assessWithBrowser(referenceText: string) {
-    if (
-      typeof window === "undefined" ||
-      !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
-    ) {
-      setError(
-        "Speech recognition not available. Configure Azure Speech in Settings for pronunciation assessment."
-      );
-      setStatus("error");
-      return;
-    }
-
-    const SpeechRecognitionAPI =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognitionAPI();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-
-    browserSttRef.current = recognition;
-    setStatus("listening");
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      setStatus("processing");
-      const sttResult = event.results[event.resultIndex][0];
-      const transcript = sttResult.transcript;
-      const confidence = sttResult.confidence ?? null;
-
-      const wordAnalyses = analyzeWithHeuristics(
-        transcript,
-        referenceText,
-        confidence
-      );
-
-      const correctCount = wordAnalyses.filter(
-        (w) => w.status === "correct"
-      ).length;
-      const totalWords = wordAnalyses.length;
-      const accuracyScore =
-        totalWords > 0 ? Math.round((correctCount / totalWords) * 100) : 0;
-
-      setResult({
-        transcript,
-        accuracyScore,
-        fluencyScore: confidence !== null ? Math.round(confidence * 100) : 50,
-        completenessScore:
-          totalWords > 0
-            ? Math.round(
-                (wordAnalyses.filter((w) => w.status !== "error" || w.score > 0)
-                  .length /
-                  totalWords) *
-                  100
-              )
-            : 0,
-        pronunciationScore: accuracyScore,
-        words: wordAnalyses.map((w) => ({
-          word: w.word,
-          accuracyScore: w.score,
-          errorType:
-            w.status === "correct" || w.status === "suspect"
-              ? ("none" as const)
-              : ("mispronunciation" as const),
-        })),
-        source: "heuristic",
-      });
-      setStatus("done");
+      }
+      if (browserSttRef.current) {
+        browserSttRef.current.stop();
+        browserSttRef.current = null;
+      }
     };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      const messages: Record<string, string> = {
-        "no-speech": "No speech detected. Please try again.",
-        "audio-capture": "No microphone found.",
-        "not-allowed": "Microphone access denied.",
-      };
-      setError(messages[event.error] || "Could not hear you. Try again.");
-      setStatus("error");
-      browserSttRef.current = null;
-    };
-
-    recognition.onend = () => {
-      browserSttRef.current = null;
-    };
-
-    recognition.start();
-  }
+  }, []);
 
   const stop = useCallback(() => {
     if (recognizerRef.current) {
-      const recognizer = recognizerRef.current as {
-        stopContinuousRecognitionAsync: (
-          cb?: () => void,
-          err?: (e: string) => void
-        ) => void;
-      };
-      recognizer.stopContinuousRecognitionAsync();
+      const recognizer = recognizerRef.current as { close: () => void };
+      try { recognizer.close(); } catch { /* ignore */ }
       recognizerRef.current = null;
     }
     if (browserSttRef.current) {
       browserSttRef.current.stop();
       browserSttRef.current = null;
     }
+    setStatus("idle");
   }, []);
 
   const reset = useCallback(() => {
     setStatus("idle");
     setResult(null);
     setError(null);
+    setAzureConfigured(!!getAzureSpeechConfig());
   }, []);
 
   return {
@@ -843,7 +855,7 @@ export function usePronunciation() {
     status,
     result,
     error,
-    hasAzure,
+    azureConfigured,
   };
 }
 
@@ -1256,11 +1268,11 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
   const [submitted, setSubmitted] = useState(false);
 
   const isListening = status === "listening";
+  const isLoading = status === "loading";
   const isProcessing = status === "processing";
   const supported =
     typeof window !== "undefined" &&
     ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
-  const hasAnySupport = supported; // Azure also needs mic, checked at runtime
 
   const handleListen = () => {
     if (isSpeaking) cancel();
@@ -1286,7 +1298,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
     assess(targetSentence);
   };
 
-  if (!hasAnySupport) {
+  if (!supported) {
     return (
       <Card className="space-y-4 animate-scale-in">
         <p className="font-display font-semibold text-xl md:text-2xl text-ink text-center py-4 leading-relaxed">
@@ -1353,7 +1365,7 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
       <div className="flex flex-col items-center gap-3">
         <button
           onClick={handleToggle}
-          disabled={submitted || isProcessing}
+          disabled={submitted || isProcessing || isLoading}
           className={cn(
             "w-20 h-20 rounded-full flex items-center justify-center text-white",
             "transition-all duration-150 ease-out",
@@ -1366,11 +1378,13 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
           {isListening ? <Square size={28} /> : <Mic size={28} />}
         </button>
         <p className="text-sm text-ink-faded">
-          {isListening
-            ? "Đang nghe… nhấn để dừng"
-            : isProcessing
-              ? "Đang phân tích..."
-              : "Nhấn để bắt đầu nói"}
+          {isLoading
+            ? "Đang tải engine phát âm..."
+            : isListening
+              ? "Đang nghe… nhấn để dừng"
+              : isProcessing
+                ? "Đang phân tích..."
+                : "Nhấn để bắt đầu nói"}
         </p>
       </div>
 
@@ -1440,9 +1454,9 @@ export function Speaking({ targetSentence, onComplete }: SpeakingProps) {
 }
 ```
 
-**Step 2: Verify the import in `scoreSpeaking` is no longer needed**
+**Step 2: Remove `scoreSpeaking` from `scoring.ts`**
 
-Check if `scoreSpeaking` from `src/lib/scoring.ts` is imported elsewhere. If only used in Speaking.tsx, it can stay but is no longer called. No need to remove — YAGNI for cleanup.
+Remove the `scoreSpeaking` function from `src/lib/scoring.ts` — it is dead code now that Speaking.tsx uses `usePronunciation` instead. Also export `lcsAlignment` so `vietnameseHeuristics.ts` can import it for word alignment.
 
 **Step 3: Commit**
 
