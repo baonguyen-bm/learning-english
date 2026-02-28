@@ -44,7 +44,7 @@ function normalize(s: string): string[] {
  * LCS-based alignment that tolerates minor misspellings.
  * Returns a map of targetIndex → inputIndex for matched word pairs.
  */
-function lcsAlignment(
+export function lcsAlignment(
   inputWords: string[],
   targetWords: string[]
 ): Map<number, number> {
